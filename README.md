@@ -1,6 +1,6 @@
 # Population-genomics
 Population genomics
-  1. align paired reads to referance genome
+  1. align paired reads to referance genome using BWA
   2. add readgroups with Picard
   3. mark duplicated reads using Picard
   4. produce QC metrices using Picard
