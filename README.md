@@ -9,3 +9,6 @@ Population genomics
   7. Call variants using Platypus
   8. Merge consensus calls
   9. SNP filter using vcftools
+  10. make FastSTRUCTURE plot
+  11. make PCA plot
+  12. make demographic history
