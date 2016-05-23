@@ -1,10 +1,10 @@
 # Population-genomics
 Population genomics
-  1. align paired reads to referance gneome
+  1. align paired reads to referance genome
   2. add readgroups with Picard
-  3. mark duplicated using Picard
-  4. produce QC info using Picard
-  5. index and sort bam files
+  3. mark duplicated reads using Picard
+  4. produce QC metrices using Picard
+  5. index and sort bam files using samtools
   6. Call variants using FreeBayes
   7. Call variants using Platypus
   8. Merge consensus calls
