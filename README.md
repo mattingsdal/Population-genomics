@@ -1,14 +1,12 @@
 # Population-genomics
 Population genomics
   1. align paired reads to referance genome using BWA
-  2. add readgroups with Picard
-  3. mark duplicated reads using Picard
-  4. produce QC metrices using Picard
-  5. index and sort bam files using samtools
-  6. Call variants using FreeBayes
-  7. Call variants using Platypus
-  8. Merge consensus calls
-  9. SNP filter using vcftools
-  10. FastSTRUCTURE plot
-  11. PCA plot
-  12. Demographic history
+  2. add readgroups, mark duplicates and produce QC metrices using Picard
+  3. index and sort bam files using samtools
+  4. Call variants using FreeBayes
+  5. Call variants using Platypus
+  6. Merge consensus calls
+  7. SNP filter using vcftools
+  8. FastSTRUCTURE plot
+  9. PCA plot
+  10. Demographic history
