@@ -4,9 +4,7 @@ Population genomics
   2. add readgroups, mark duplicates and produce QC metrices using Picard
   3. index and sort bam files using samtools
   4. Call variants using FreeBayes
-  5. Call variants using Platypus
-  6. Merge consensus calls
-  7. SNP filter using vcftools
-  8. FastSTRUCTURE plot
-  9. PCA plot
-  10. Demographic history
+  5. SNP filter using vcftools
+  6. FastSTRUCTURE plot
+  7. PCA plot
+  8. Demographic history
