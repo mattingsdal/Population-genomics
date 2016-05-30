@@ -3,6 +3,7 @@
 ## run fastStructure using a simple model. It assumes strong structure. Run logistic if we have little structure
 ##############
 
+# PLINK binary dataset:
 snpdata=freebayes.QC.r202.maf005
 outdir=/home/mortenma/data/bam_fixrg_dedup/freebayes/plink/structure
 
