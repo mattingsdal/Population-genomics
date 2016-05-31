@@ -24,5 +24,11 @@ vcftools --vcf tmp.vcf --keep ../pop/SM --recode --out freebayes.SNPs.filtered.f
 vcf-query freebayes.SNPs.filtered.final.maf005.AR.recode.vcf -f '%CHROM\t%POS\t%REF\t[%GT]\n' | awk '{gsub ( "/","" ) ; print $0 }' >AR.popdata
 vcf-query freebayes.SNPs.filtered.final.maf005.SM.recode.vcf -f '%CHROM\t%POS\t%REF\t[%GT]\n' | awk '{gsub ( "/","" ) ; print $0 }' >SM.popdata
 
-# start IBS
-python ~/software/Inferring-demography-from-IBS/compatibilize_hapfiles.py AR SM
+# copy AR.popdata and SM.popdata to software directory...start IBS
+scp SM.popdata ~/software/Inferring-demography-from-IBS
+scp AR.popdata ~/software/Inferring-demography-from-IBS
+
+cd ~/software/Inferring-demography-from-IBS
+
+python compatibilize_hapfiles.py AR SM
+python parse_between_pops_allpairs.py AR SM None 1
