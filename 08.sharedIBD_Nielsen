@@ -1,0 +1,13 @@
+# remove "scf" in chromosome name
+awk '{gsub(/^scf/,""); print}' freebayes.SNPs.filtered.final.maf005.recode.vcf > tmp.vcf 
+
+# create AR and SM subset
+vcftools --vcf tmp.vcf --keep ../pop/AR --recode --out freebayes.SNPs.filtered.final.maf005.AR
+vcftools --vcf tmp.vcf --keep ../pop/SM --recode --out freebayes.SNPs.filtered.final.maf005.SM
+
+# create input using SNPfiltered SNPs and MAF > 5%
+vcf-query freebayes.SNPs.filtered.final.maf005.AR.recode.vcf -f '%CHROM\t%POS\t%REF\t[%GT]\n' | awk '{gsub ( "/","" ) ; print $0 }' >AR.popdata
+vcf-query freebayes.SNPs.filtered.final.maf005.SM.recode.vcf -f '%CHROM\t%POS\t%REF\t[%GT]\n' | awk '{gsub ( "/","" ) ; print $0 }' >SM.popdata
+
+# start IBS
+python ~/software/Inferring-demography-from-IBS/compatibilize_hapfiles.py AR SM
