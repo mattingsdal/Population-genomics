@@ -1,5 +1,20 @@
+# extract relevant chromsomes
+vcftools --vcf freebayes.SNPs.filtered.final.maf005.recode.vcf \
+--chr scf7180002389883 \
+--chr scf7180002389442 \
+--chr scf7180002346674 \
+--chr scf7180002348625 \
+--chr scf7180002347780 \
+--chr scf7180002389605 \
+--chr scf7180002378143 \
+--chr scf7180002342864 \
+--chr scf7180002353023 \
+--chr scf7180002378669 \
+--chr scf7180002351444 \
+--recode --out test
+
 # remove "scf" in chromosome name
-awk '{gsub(/^scf/,""); print}' freebayes.SNPs.filtered.final.maf005.recode.vcf > tmp.vcf 
+awk '{gsub(/^scf/,""); print}' test.recode.vcf > tmp.vcf 
 
 # create AR and SM subset
 vcftools --vcf tmp.vcf --keep ../pop/AR --recode --out freebayes.SNPs.filtered.final.maf005.AR
