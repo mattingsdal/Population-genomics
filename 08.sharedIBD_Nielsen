@@ -42,3 +42,11 @@ python infer_onepop_cumulative.py SM_lengths.ibs 100 5 2
 # example data
 python parse_within_pop_allpairs.py example_input_data/CEU None 1
 python infer_onepop_cumulative.py example_input_data/CEU_lengths.ibs 100 5 30
+
+
+
+# dadi
+# use python script from 
+# https://github.com/mscharmann/python/blob/f0453609fc2112a48f6424f9cfa2ae094d94086b/vcf_to_dadi.py
+
+python test3.py --popmap popmap.txt --vcf freebayes.SNPs.filtered.final.maf005.recode.vcf
