@@ -17,30 +17,33 @@ vcftools --vcf freebayes.SNPs.filtered.final.maf005.recode.vcf \
 awk '{gsub(/^scf/,""); print}' test.recode.vcf > tmp.vcf 
 
 # create AR and SM subset
-vcftools --vcf tmp.vcf --keep ../pop/AR --recode --out freebayes.SNPs.filtered.final.maf005.AR
-vcftools --vcf tmp.vcf --keep ../pop/SM --recode --out freebayes.SNPs.filtered.final.maf005.SM
+vcftools --vcf tmp.vcf --keep ../pop/west --recode --out freebayes.SNPs.filtered.final.maf005.west
+vcftools --vcf tmp.vcf --keep ../pop/south --recode --out freebayes.SNPs.filtered.final.maf005.south
 
 # create input using SNPfiltered SNPs and MAF > 5%
-vcf-query freebayes.SNPs.filtered.final.maf005.AR.recode.vcf -f '%CHROM\t%POS\t%REF\t[%GT]\n' | awk '{gsub ( "/","" ) ; print $0 }' >AR.popdata
-vcf-query freebayes.SNPs.filtered.final.maf005.SM.recode.vcf -f '%CHROM\t%POS\t%REF\t[%GT]\n' | awk '{gsub ( "/","" ) ; print $0 }' >SM.popdata
+vcf-query freebayes.SNPs.filtered.final.maf005.south.recode.vcf -f '%CHROM\t%POS\t%REF\t[%GT]\n' | awk '{gsub ( "/","" ) ; print $0 }' >south.popdata
+vcf-query freebayes.SNPs.filtered.final.maf005.west.recode.vcf -f '%CHROM\t%POS\t%REF\t[%GT]\n' | awk '{gsub ( "/","" ) ; print $0 }' >west.popdata
 
 # copy AR.popdata and SM.popdata to software directory...start IBS
-scp SM.popdata ~/software/Inferring-demography-from-IBS
-scp AR.popdata ~/software/Inferring-demography-from-IBS
+scp west.popdata ~/software/Inferring-demography-from-IBS
+scp south.popdata ~/software/Inferring-demography-from-IBS
 
 cd ~/software/Inferring-demography-from-IBS
 
 #### prepare data
 #within each pop
-python parse_within_pop_allpairs.py AR None 1
-python parse_within_pop_allpairs.py SM None 1
+python parse_within_pop_allpairs.py south None 1
+python parse_within_pop_allpairs.py west None 1
+python parse_within_pop_allpairs.py west None 1
+python parse_between_pops_allpairs.py west south None 1
+
 
 #### run model with minimum tract length of 100, 10 simulations and ageneration time of 2 years for each population
-python infer_onepop_adaptive_cumulative.py SM_lengths.ibs 100 10 2
-python infer_onepop_adaptive_cumulative.py AR_lengths.ibs 100 10 2
+python infer_onepop_adaptive_cumulative.py south_lengths.ibs 100 10 2
+python infer_onepop_adaptive_cumulative.py west_lengths.ibs 100 10 2
 
 #### run model, same as above, between populations
-python infer_between_adaptive_cumulative.py AR_vs_SM_lengths.ibs 100 10 2
+python infer_between_adaptive_cumulative.py west_vs_south_lengths.ibs 100 10 2
 
 #### copy stout "parameters for plotting to vim demographic_history.txt
 #### use "plot_between.py" if pop1_vs_pop2.ibs
