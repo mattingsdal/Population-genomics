@@ -35,26 +35,15 @@ cd ~/software/Inferring-demography-from-IBS
 python parse_within_pop_allpairs.py AR None 1
 python parse_within_pop_allpairs.py SM None 1
 
-#between pop
-
-
-python infer_onepop_cumulative.py AR_lengths.ibs 100 5 2
-python infer_onepop_cumulative.py SM_lengths.ibs 100 5 2
-
-
-# working 
-python infer_onepop_adaptive_cumulative.py example_input_data/CEU_lengths.ibs 100 2 20
-
-# run model with minimum tract length of 100, 10 simulations and ageneration time of 2 years for each population
+#### run model with minimum tract length of 100, 10 simulations and ageneration time of 2 years for each population
 python infer_onepop_adaptive_cumulative.py SM_lengths.ibs 100 10 2
 python infer_onepop_adaptive_cumulative.py AR_lengths.ibs 100 10 2
 
-# run model, same as above, between populations
+#### run model, same as above, between populations
 python infer_between_adaptive_cumulative.py AR_vs_SM_lengths.ibs 100 10 2
 
-
-#copy stout "parameters for plotting to vim demographic_history.txt
-# use "plot_between.py" if pop1_vs_pop2.ibs
+#### copy stout "parameters for plotting to vim demographic_history.txt
+#### use "plot_between.py" if pop1_vs_pop2.ibs
 python plot_onepop.py SM_lengths.ibs demographic_history.txt demo.pdf
 
 
