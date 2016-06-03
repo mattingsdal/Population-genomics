@@ -1,4 +1,4 @@
-# extract relevant chromsomes
+# extract longest contigs chromsomes
 vcftools --vcf freebayes.SNPs.filtered.final.maf005.recode.vcf \
 --chr scf7180002389883 \
 --chr scf7180002389442 \
@@ -30,18 +30,33 @@ scp AR.popdata ~/software/Inferring-demography-from-IBS
 
 cd ~/software/Inferring-demography-from-IBS
 
+#### prepare data
 #within each pop
-python compatibilize_hapfiles.py AR SM
 python parse_within_pop_allpairs.py AR None 1
 python parse_within_pop_allpairs.py SM None 1
+
+#between pop
+
 
 python infer_onepop_cumulative.py AR_lengths.ibs 100 5 2
 python infer_onepop_cumulative.py SM_lengths.ibs 100 5 2
 
 
-# example data
-python parse_within_pop_allpairs.py example_input_data/CEU None 1
-python infer_onepop_cumulative.py example_input_data/CEU_lengths.ibs 100 5 30
+# working 
+python infer_onepop_adaptive_cumulative.py example_input_data/CEU_lengths.ibs 100 2 20
+
+# run model with minimum tract length of 100, 10 simulations and ageneration time of 2 years for each population
+python infer_onepop_adaptive_cumulative.py SM_lengths.ibs 100 10 2
+python infer_onepop_adaptive_cumulative.py AR_lengths.ibs 100 10 2
+
+# run model, same as above, between populations
+python infer_between_adaptive_cumulative.py AR_vs_SM_lengths.ibs 100 10 2
+
+
+#copy stout "parameters for plotting to vim demographic_history.txt
+# use "plot_between.py" if pop1_vs_pop2.ibs
+python plot_onepop.py SM_lengths.ibs demographic_history.txt demo.pdf
+
 
 
 
@@ -50,4 +65,4 @@ python infer_onepop_cumulative.py example_input_data/CEU_lengths.ibs 100 5 30
 # https://github.com/mscharmann/python/blob/f0453609fc2112a48f6424f9cfa2ae094d94086b/vcf_to_dadi.py
 
 # create site frequency spectrum
-python ../vcf2dadi.py --vcf ~/data/bam_fixrg_dedup/freebayes/freebayes.SNPs.filtered.final.maf005.recode.vcf --popmap ~/data/bam_fixrg_dedup/freebayes/popmap.txt
+# python ../vcf2dadi.py --vcf ~/data/bam_fixrg_dedup/freebayes/freebayes.SNPs.filtered.final.maf005.recode.vcf --popmap ~/data/bam_fixrg_dedup/freebayes/popmap.txt
