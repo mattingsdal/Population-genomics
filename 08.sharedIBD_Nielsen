@@ -16,7 +16,7 @@ vcftools --vcf freebayes.SNPs.filtered.final.maf005.recode.vcf \
 # remove "scf" in chromosome name
 awk '{gsub(/^scf/,""); print}' test.recode.vcf > tmp.vcf 
 
-# create AR and SM subset
+# create "west" and "south" subset
 vcftools --vcf tmp.vcf --keep ../pop/west --recode --out freebayes.SNPs.filtered.final.maf005.west
 vcftools --vcf tmp.vcf --keep ../pop/south --recode --out freebayes.SNPs.filtered.final.maf005.south
 
