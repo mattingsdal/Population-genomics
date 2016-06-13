@@ -17,8 +17,8 @@ ls *BWA.rgfix.dedup.bam | cut -f 1 -d . >samples
          
 cd fasta
 # extract contig of intereset and align them using muscle
-awk 'BEGIN {RS=">"} /scf7180002340798/ {print ">"$0}' AR* >lala
+awk 'BEGIN {RS=">"} /scf7180002340798/ {print ">"$0}' *fasta >my_contig.fasta
 
-# run muscle
-muscle -in lala -out lala2 -maxiters 1 -diags
+# run mafft
+/usr/bin/mafft  --auto --clustalout --reorder my_contig.fasta > my_contig.msa
 
