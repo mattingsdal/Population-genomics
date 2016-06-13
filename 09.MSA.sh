@@ -16,4 +16,5 @@ ls *BWA.rgfix.dedup.bam | cut -f 1 -d . >samples
          done < samples
          
 cd fasta
+# extract contig of intereset and align them using muscle
 
