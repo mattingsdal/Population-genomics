@@ -17,4 +17,8 @@ ls *BWA.rgfix.dedup.bam | cut -f 1 -d . >samples
          
 cd fasta
 # extract contig of intereset and align them using muscle
+awk 'BEGIN {RS=">"} /scf7180002340798/ {print ">"$0}' AR* >lala
+
+# run muscle
+muscle -in lala -out lala2 -maxiters 1 -diags
 
