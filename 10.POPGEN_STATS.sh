@@ -37,3 +37,8 @@ vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/ST --hardy
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/NH --hardy --out popgen/NH
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/SM --hardy --out popgen/SM 
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/ARD --hardy --out popgen/ARD
+
+# DEPTH
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --depth --out popgen/all 
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --site-depth --out popgen/all 
+
