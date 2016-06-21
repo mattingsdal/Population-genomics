@@ -1,3 +1,4 @@
+library(scales)
 library(rworldmap)
 newmap <- getMap(resolution = "high")
 plot(newmap, xlim = c(-6, 15), ylim = c(55, 63), asp = 2)
@@ -14,5 +15,8 @@ Ardtoe=c(-5.88232,56.76745)
 loc=rbind(Tvedestrand,Arendal,Egersund,Stavanger,Norheimsund,Smola,Ardtoe)
 
 plot(newmap, xlim = c(-6, 15), ylim = c(55, 63), asp = 2)
-points(loc, col = "black", cex = 3,lwd=2,pch=1)
-legend(x=8.93140,y=58.62228,legend="Tvedestrand",cex=0.5,bg="white",box.col="white",x.intersp=0,merge=T)
+points(loc, col = "black", cex = 1,lwd=0,pch=19)
+points(loc, col = alpha("black",0.1), cex = 3,lwd=0,pch=19)
+text(x=loc[,1]+1.5,y=loc[,2],label=row.names(loc),cex=0.7,font=2,bg="white",col=alpha("black",0.7))
+
+
