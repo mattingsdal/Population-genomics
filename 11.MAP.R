@@ -4,7 +4,8 @@
 
 setwd("E:/data/bam_fixrg_dedup/freebayes/popgen")
 
-
+#########################################################################
+#########################################################################
 library(scales)
 library(rworldmap)
 newmap <- getMap(resolution = "high")
@@ -41,9 +42,9 @@ text(x=loc[,1]+1,y=loc[,2],label=index,cex=1,font=2,col=alpha("black",1))
 dev.off()
 
 
-###
+#########################################################################
+#########################################################################
 ### plot PCA
-###
 ### first perform clustering analysis using PLINK then plot in R
 
 cd /home/mortenma/data/bam_fixrg_dedup/freebayes
@@ -63,5 +64,30 @@ plot(pca$C1,pca$C2,pch=19,cex=2,lwd=0,col=alpha(as.character(pca2[,7]),0.5))
 points(pca$C1,pca$C2,cex=0.5,pch=19)
 dev.off()
 
+#########################################################################
+#########################################################################
+### heterozygosity
+
+het=read.table("all.het",sep="\t",header=T)
+
+Group <- as.factor(c(
+rep("Arendal",8),
+rep("Ardtoe",8),
+rep("Egersund",8),
+rep("Norheimsund",8),
+rep("Smola",8),
+rep("Stavanger",8),
+rep("Tvedestrand",8))
+)
+Location=c(rep(2,8),rep(7,8),rep(3,8),rep(5,8),rep(6,8),rep(4,8),rep(1,8))
+
+HET=cbind(het,Group,Location)
+
+pdf("Heterozygosity.pdf")
+par(mar = rep(4, 4))
+plot(HET$Location,HET$F,col=alpha(tmp2,0.5),pch=19,cex=3,lwd=0,ylab="F",xlab="Location", xaxt = "n")
+points(HET$Location,HET$F,col="black",pch=19,cex=1,lwd=0)
+axis(1, cex=2,at=1:7, labels=c("A","B","C","D","E","F","G"))
+dev.off()
 
 
