@@ -2,6 +2,8 @@
     # ROYLABLUE = 4169e1
     # ORANGE RED = ff4500
 
+setwd("E:/data/bam_fixrg_dedup/freebayes/popgen")
+
 
 library(scales)
 library(rworldmap)
