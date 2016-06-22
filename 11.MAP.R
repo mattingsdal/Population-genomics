@@ -18,12 +18,29 @@ Stavanger=c(5.73311,58.96998)
 Norheimsund=c(6.14564,60.37089)
 Smola=c(8.00687,63.38657)
 Ardtoe=c(-5.88232,56.76745)
+index=c("A","B","C","D","E","F","G")
+col=c("#4169e1","#4169e1","#4169e1","#ff4500","#ff4500","#ff4500","#ffd700")
 
-loc=rbind(Tvedestrand,Arendal,Egersund,Stavanger,Norheimsund,Smola,Ardtoe)
 
-plot(newmap, xlim = c(-6, 15), ylim = c(55, 63), asp = 2)
+tmp=data.frame(rbind(Tvedestrand,Arendal,Egersund,Stavanger,Norheimsund,Smola,Ardtoe))
+loc=cbind(tmp,index,col)
+
+pdf("MAP.pdf")
+par(mar = rep(0, 4))
+plot(newmap, xlim = c(-6, 15), ylim = c(55, 63), asp = 2,lwd=1)
 points(loc, col = "black", cex = 1,lwd=0,pch=19)
-points(loc, col = alpha("black",0.1), cex = 3,lwd=0,pch=19)
-text(x=loc[,1]+1.5,y=loc[,2],label=row.names(loc),cex=0.7,font=2,bg="white",col=alpha("black",0.7))
+points(loc, col = alpha(loc$col,0.5), cex = 3,lwd=0,pch=19)
+rect(loc[1,1]+0.5,loc[1,2]-0.25,loc[1,1]+1.5,loc[1,2]+0.25,col="white")
+rect(loc[2,1]+0.5,loc[2,2]-0.25,loc[2,1]+1.5,loc[2,2]+0.25)
+rect(loc[3,1]+0.5,loc[3,2]-0.25,loc[3,1]+1.5,loc[3,2]+0.25,col="white")
+rect(loc[4,1]+0.5,loc[4,2]-0.25,loc[4,1]+1.5,loc[4,2]+0.25,col="white")
+rect(loc[5,1]+0.5,loc[5,2]-0.25,loc[5,1]+1.5,loc[5,2]+0.25,col="white")
+rect(loc[6,1]+0.5,loc[6,2]-0.25,loc[6,1]+1.5,loc[6,2]+0.25,col="white")
+rect(loc[7,1]+0.5,loc[7,2]-0.25,loc[7,1]+1.5,loc[7,2]+0.25,col="white")
+text(x=loc[,1]+1,y=loc[,2],label=index,cex=1,font=2,col=alpha("black",1))
+dev.off()
+
+
+
 
 
