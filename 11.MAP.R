@@ -60,7 +60,7 @@ pca2=cbind(pca,tmp,tmp2)
 
 pdf("PCA.pdf")
 par(mar = rep(2, 4))
-plot(pca$C1,pca$C2,pch=19,cex=2,lwd=0,col=alpha(as.character(pca2[,7]),0.5))
+plot(pca$C1,pca$C2,pch=19,cex=3,lwd=0,col=alpha(as.character(pca2[,7]),0.5))
 points(pca$C1,pca$C2,cex=0.5,pch=19)
 dev.off()
 
