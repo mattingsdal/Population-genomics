@@ -1,3 +1,8 @@
+    # GOLD = ffd700
+    # ROYLABLUE = 4169e1
+    # ORANGE RED = ff4500
+
+
 library(scales)
 library(rworldmap)
 newmap <- getMap(resolution = "high")
