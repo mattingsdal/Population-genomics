@@ -90,4 +90,17 @@ points(HET$Location,HET$F,col="black",pch=19,cex=1,lwd=0)
 axis(1, cex=2,at=1:7, labels=c("A","B","C","D","E","F","G"))
 dev.off()
 
+#########################################################################
+#########################################################################
+### site spesific Fst between south and west
+
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/south --weir-fst-pop ../pop/west --out popgen/fst
+
+R
+fst=read.table("fst.weir.fst",sep="",header=T)
+pdf("Fst_distribution.pdf")
+par(mar = rep(4, 4))
+hist(fst[,3],breaks=50,col="gray95",main="",xlab="Fst")
+legend(x=0.2,y=30000,legend=c("Mean Fst    = 0.09","Median Fst = 0.04"),bty="n",text.font=2)
+dev.off()
 
