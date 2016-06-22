@@ -104,3 +104,58 @@ hist(fst[,3],breaks=50,col="gray95",main="",xlab="Fst")
 legend(x=0.2,y=30000,legend=c("Mean Fst    = 0.09","Median Fst = 0.04"),bty="n",text.font=2)
 dev.off()
 
+#########################################################################
+#########################################################################
+### Fst between all and plot Fst vs geographics distance
+##################
+
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/TV --weir-fst-pop ../pop/AR --out popgen/TV_AR
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/AR --weir-fst-pop ../pop/EG --out popgen/AR_EG
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/EG --weir-fst-pop ../pop/ST --out popgen/EG_ST
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/ST --weir-fst-pop ../pop/NH --out popgen/ST_NH
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/NH --weir-fst-pop ../pop/SM --out popgen/NH_SM
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/west --weir-fst-pop ../pop/ARD --out popgen/west_ARD
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/south --weir-fst-pop ../pop/ARD --out popgen/south_ARD
+
+
+tv_ar=read.table("TV_AR.weir.fst",sep="",header=T)
+ar_eg=read.table("AR_EG.weir.fst",sep="",header=T)
+eg_st=read.table("EG_ST.weir.fst",sep="",header=T)
+st_nh=read.table("ST_NH.weir.fst",sep="",header=T)
+nh_sm=read.table("NH_SM.weir.fst",sep="",header=T)
+w_ard=read.table("west_ARD.weir.fst",sep="",header=T)
+s_ard=read.table("south_ARD.weir.fst",sep="",header=T)
+
+res=matrix(ncol=2,nrow=7)
+
+
+FST=c(
+mean(na.omit(tv_ar[,3])),
+mean(na.omit(ar_eg[,3])),
+mean(na.omit(eg_st[,3])),
+mean(na.omit(st_nh[,3])),
+mean(na.omit(nh_sm[,3])),
+mean(na.omit(w_ard[,3])),
+mean(na.omit(s_ard[,3]))
+)
+
+res[,1]=as.numeric(c("20","200","70","180","500","500","500"))
+res[,2]=FST
+
+row.names(res)=c("A vs B","B vs C","C vs D","D vs E","E vs F","DEF vs G","ABC vs G")
+colnames(res)=c("Geographical distance (km)","Genetic distance (mean Fst)")
+res=as.data.frame(res)
+
+pdf("km_vs_Fst.pdf")
+plot(res,pch=19,cex=1.5)
+text(x=res[1,1]+10,y=res[1,2]+0.007,label="A vs B",cex=1,font=2)
+text(x=res[2,1]+20,y=res[2,2]+0.007,label="B vs C",cex=1,font=2)
+text(x=res[3,1]+10,y=res[3,2]+0.007,label="C vs D",cex=1,font=2)
+text(x=res[4,1]-10,y=res[4,2]-0.007,label="D vs E",cex=1,font=2)
+text(x=res[5,1]-10,y=res[5,2]+0.007,label="E vs F",cex=1,font=2)
+text(x=res[6,1]-20,y=res[6,2]+0.007,label="DEF vs G",cex=1,font=2)
+text(x=res[7,1]-20,y=res[7,2]+0.006,label="ABC vs G",cex=1,font=2)
+dev.off()
+
+
+
