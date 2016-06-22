@@ -41,6 +41,27 @@ text(x=loc[,1]+1,y=loc[,2],label=index,cex=1,font=2,col=alpha("black",1))
 dev.off()
 
 
+###
+### plot PCA
+###
+### first perform clustering analysis using PLINK then plot in R
+
+cd /home/mortenma/data/bam_fixrg_dedup/freebayes
+vcf=freebayes.SNPs.filtered.final.recode.vcf
+plink --vcf $vcf --allow-extra-chr --cluster --mds-plot 2
+mv plink.mds popgen/
+
+R
+pca=read.table("plink.mds",sep="",header=T)
+tmp=c(rep("B",8),rep("G",8),rep("C",8),rep("E",8),rep("F",8),rep("D",8),rep("A",8))
+tmp2=c(rep("#4169e1",8),rep("#ffd700",8),rep("#4169e1",8),rep("#ff4500",8),rep("#ff4500",8),rep("#ff4500",8),rep("#4169e1",8))
+pca2=cbind(pca,tmp,tmp2)
+
+pdf("PCA.pdf")
+par(mar = rep(2, 4))
+plot(pca$C1,pca$C2,pch=19,cex=2,lwd=0,col=alpha(as.character(pca2[,7]),0.5))
+points(pca$C1,pca$C2,cex=0.5,pch=19)
+dev.off()
 
 
 
