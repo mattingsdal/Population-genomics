@@ -20,6 +20,7 @@ chooseK.py --input=structure/freebayes
 
 ## edit distruct2.2 to change colors
 ## edit pop file and poporder file
+## use pop2.txt and poporder2.txt to use abbrivations
 
 distruct2.2 -K 2 --input=freebayes --output=$outdir/freebayes_K2.svg --popfile=pop.txt --poporder=poporder.txt --title="K=2, Freebayes QC, no LD, MAF>5%, SNPs=119 066"
 distruct2.2 -K 3 --input=freebayes --output=$outdir/freebayes_K3.svg --popfile=pop.txt --poporder=poporder.txt --title="K=3, Freebayes QC, no LD, MAF>5%, SNPs=119 066"
