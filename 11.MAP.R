@@ -26,18 +26,18 @@ col=c("#4169e1","#4169e1","#4169e1","#ff4500","#ff4500","#ff4500","#ffd700")
 tmp=data.frame(rbind(Tvedestrand,Arendal,Egersund,Stavanger,Norheimsund,Smola,Ardtoe))
 loc=cbind(tmp,index,col)
 
-pdf("MAP.pdf")
+Cairo(file="MAP.pdf",type="pdf",width=80,height=80,units="mm")
 par(mar = rep(0, 4))
-plot(newmap, xlim = c(-6, 15), ylim = c(55, 63), asp = 2,lwd=1)
-points(loc, col = "black", cex = 1,lwd=0,pch=19)
-points(loc, col = alpha(loc$col,0.5), cex = 3,lwd=0,pch=19)
-rect(loc[1,1]+0.5,loc[1,2]-0.25,loc[1,1]+1.5,loc[1,2]+0.25,col="white")
-rect(loc[2,1]+0.5,loc[2,2]-0.25,loc[2,1]+1.5,loc[2,2]+0.25)
-rect(loc[3,1]+0.5,loc[3,2]-0.25,loc[3,1]+1.5,loc[3,2]+0.25,col="white")
-rect(loc[4,1]+0.5,loc[4,2]-0.25,loc[4,1]+1.5,loc[4,2]+0.25,col="white")
-rect(loc[5,1]+0.5,loc[5,2]-0.25,loc[5,1]+1.5,loc[5,2]+0.25,col="white")
-rect(loc[6,1]+0.5,loc[6,2]-0.25,loc[6,1]+1.5,loc[6,2]+0.25,col="white")
-rect(loc[7,1]+0.5,loc[7,2]-0.25,loc[7,1]+1.5,loc[7,2]+0.25,col="white")
+plot(newmap, xlim = c(-6, 15), ylim = c(55, 63), asp = 2,lwd=1,col="gray95")
+points(loc, col = alpha(loc$col,0.5), cex = 2,lwd=0,pch=19)
+points(loc, col = "black", cex = 0.5,lwd=0,pch=19)
+rect(loc[1,1]+0.5,loc[1,2]-0.25,loc[1,1]+1.5,loc[1,2]+0.25,col="white",border=NA)
+rect(loc[2,1]+0.5,loc[2,2]-0.25,loc[2,1]+1.5,loc[2,2]+0.25,border=NA)
+rect(loc[3,1]+0.5,loc[3,2]-0.25,loc[3,1]+1.5,loc[3,2]+0.25,col="white",border=NA)
+rect(loc[4,1]+0.5,loc[4,2]-0.25,loc[4,1]+1.5,loc[4,2]+0.25,col="white",border=NA)
+rect(loc[5,1]+0.5,loc[5,2]-0.25,loc[5,1]+1.5,loc[5,2]+0.25,col="white",border=NA)
+rect(loc[6,1]+0.5,loc[6,2]-0.25,loc[6,1]+1.5,loc[6,2]+0.25,col="white",border=NA)
+rect(loc[7,1]+0.5,loc[7,2]-0.25,loc[7,1]+1.5,loc[7,2]+0.25,col="white",border=NA)
 text(x=loc[,1]+1,y=loc[,2],label=index,cex=1,font=2,col=alpha("black",1))
 dev.off()
 
@@ -58,10 +58,10 @@ tmp=c(rep("B",8),rep("G",8),rep("C",8),rep("E",8),rep("F",8),rep("D",8),rep("A",
 tmp2=c(rep("#4169e1",8),rep("#ffd700",8),rep("#4169e1",8),rep("#ff4500",8),rep("#ff4500",8),rep("#ff4500",8),rep("#4169e1",8))
 pca2=cbind(pca,tmp,tmp2)
 
-pdf("PCA.pdf")
-par(mar = rep(2, 4))
-plot(pca$C1,pca$C2,pch=19,cex=3,lwd=0,col=alpha(as.character(pca2[,7]),0.5))
-points(pca$C1,pca$C2,cex=0.5,pch=19)
+Cairo(file="PCA.pdf",type="pdf",width=80,height=80,units="mm")
+par(mar = c(2,2,1,1))
+plot(pca$C1,pca$C2,pch=19,cex=2,cex.axis=0.5,cex.lab=0.5,lwd=0,col=alpha(as.character(pca2[,7]),0.5),xlab="PC1",ylab="PC2")
+text(x=pca$C1,y=pca$C2,label=as.character(tmp),cex=0.5,font=2,col=alpha("black",1))
 dev.off()
 
 #########################################################################
@@ -83,12 +83,13 @@ Location=c(rep(2,8),rep(7,8),rep(3,8),rep(5,8),rep(6,8),rep(4,8),rep(1,8))
 
 HET=cbind(het,Group,Location)
 
-pdf("Heterozygosity.pdf")
-par(mar = rep(4, 4))
-plot(HET$Location,HET$F,col=alpha(tmp2,0.5),pch=19,cex=3,lwd=0,ylab="F",xlab="Location", xaxt = "n")
-points(HET$Location,HET$F,col="black",pch=19,cex=1,lwd=0)
-axis(1, cex=2,at=1:7, labels=c("A","B","C","D","E","F","G"))
+Cairo(file="F.pdf",type="pdf",width=80,height=80,units="mm")
+par(mar = c(2,2,1,1))
+plot(HET$Location,HET$F,cex.axis=0.5,cex.lab=0.5,col=alpha(tmp2,0.5),pch=19,cex=2,lwd=0,ylab="F",xlab="Location", xaxt = "n")
+points(HET$Location,HET$F,col="black",pch=19,cex=0.5,lwd=0)
+axis(1, cex.axis=0.5,at=1:7, labels=c("A","B","C","D","E","F","G"))
 dev.off()
+
 
 #########################################################################
 #########################################################################
