@@ -119,7 +119,8 @@ vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/NH
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/west --weir-fst-pop ../pop/ARD --out popgen/west_ARD
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --weir-fst-pop ../pop/south --weir-fst-pop ../pop/ARD --out popgen/south_ARD
 
-
+R
+setwd("E:/data/bam_fixrg_dedup/freebayes/popgen")
 tv_ar=read.table("TV_AR.weir.fst",sep="",header=T)
 ar_eg=read.table("AR_EG.weir.fst",sep="",header=T)
 eg_st=read.table("EG_ST.weir.fst",sep="",header=T)
@@ -148,7 +149,7 @@ row.names(res)=c("A vs B","B vs C","C vs D","D vs E","E vs F","DEF vs G","ABC vs
 colnames(res)=c("Geographical distance (km)","Genetic distance (mean Fst)")
 res=as.data.frame(res)
 
-pdf("km_vs_Fst.pdf")
+Cairo(file="km_vs_fst.pdf",type="pdf",width=80,height=80,units="mm")
 plot(res,pch=19,cex=1.5)
 text(x=res[1,1]+10,y=res[1,2]+0.007,label="A vs B",cex=1,font=2)
 text(x=res[2,1]+20,y=res[2,2]+0.007,label="B vs C",cex=1,font=2)
