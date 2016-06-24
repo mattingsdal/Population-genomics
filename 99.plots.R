@@ -6,6 +6,7 @@ setwd("E:/data/bam_fixrg_dedup/freebayes/popgen")
 
 #########################################################################
 #########################################################################
+#### construct map of interest, Northsea
 library(scales)
 library(rworldmap)
 newmap <- getMap(resolution = "high")
