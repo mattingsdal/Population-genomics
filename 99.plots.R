@@ -159,4 +159,27 @@ text(x=res[7,1]-20,y=res[7,2]+0.006,label="ABC vs G",cex=1,font=2)
 dev.off()
 
 
+#########################################################################
+#########################################################################
+### TREEMIX
+
+wd=/home/mortenma/data/bam_fixrg_dedup/freebayes
+
+cd $wd
+plink --bfile plink --freq --missing --cluster --within ../pop/cluster2.txt --allow-extra-chr
+gzip plink.frq.strat
+python ~/software/treemix_0.1_src/utils/plink2treemix.py plink.frq.strat.gz 2treemix.frq.gz
+treemix -i 2treemix.frq.gz -k 1000 -m 3 -root G -o corkwing -se -bootstrap -seed 666
+
+setwd("E:/data/bam_fixrg_dedup/freebayes")
+
+R
+source("E:/data/plotting_funcs.R")
+
+Cairo(file="popgen/treemix.pdf",type="pdf",width=80,height=80,units="mm")
+par(mar = c(2,1,1,0))
+plot_tree("corkwing",font=2,cex=0.8)
+dev.off()
+
+#########################################################################
 
