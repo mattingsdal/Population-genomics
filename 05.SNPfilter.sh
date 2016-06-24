@@ -12,6 +12,7 @@ vcffilter -f "SAF > 0 & SAR >0 & AB > 0.25 & AB < 0.75 & QUAL / DP > 0.25 & RPR 
 ### maxDP x2 averadge depth       =
 vcftools --vcf freebayes.SNPs.filtered.vcf --minDP 3 --maxDP 20 --max-missing 1 --recode --out freebayes.SNPs.filtered.final
 
+#####################################################
 ##### generate random names for the SNPs
 vcf=freebayes.SNPs.filtered.final.recode.vcf
 
@@ -23,8 +24,8 @@ paste plink.bim random_names >tmp
 awk '{print $1"\t"$7"\t"$3"\t"$4"\t"$5"\t"$6}' tmp >plink2.bim
 plink --bed plink.bed --bim plink2.bim --fam plink.fam --make-bed --allow-extra-chr 
 
-#### VCF file with SNP names is not "plink.bed" files
-
+#### VCF file with SNP names is now  "plink.bed" files
+######################################################
 
 # LD filtering
 # plink --bfile freebayes.QC --allow-extra-chr --indep-pairwise 20kb 20 0.2
