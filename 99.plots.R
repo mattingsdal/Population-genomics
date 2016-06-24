@@ -185,3 +185,31 @@ dev.off()
 
 #########################################################################
 
+
+#### LD decay
+plink --bfile plink --r2 --ld-window-r2 0.2 --ld-window-kb 1000 --ld-window 10000 --keep ../pop/south --allow-extra-chr --out south
+plink --bfile plink --r2 --ld-window-r2 0.2 --ld-window-kb 1000 --ld-window 10000 --keep ../pop/north --allow-extra-chr --out north
+plink --bfile plink --r2 --ld-window-r2 0.2 --ld-window-kb 1000 --ld-window 10000 --keep ../pop/scotland --allow-extra-chr --out ard
+
+R
+setwd("E:/data/bam_fixrg_dedup/freebayes")
+south=read.table("south.ld",sep="",header=T)
+north=read.table("north.ld",sep="",header=T)
+scotland=read.table("ard.ld",sep="",header=T)
+
+south_bp=south$BP_B-south$BP_A
+north_bp=north$BP_B-north$BP_A
+scotland_bp=scotland$BP_B-scotland$BP_A
+
+smoothingSpline_south = smooth.spline(south_bp,south$R2, spar=0.35)
+smoothingSpline_north = smooth.spline(north_bp,north$R2, spar=0.35)
+smoothingSpline_scotland = smooth.spline(scotland_bp,scotland$R2, spar=0.35)
+
+plot(smoothingSpline_south,type="l",lwd=4,col="#4169e1",xlim=c(0,100000),ylab="pairwise LD (r2)",xlab="Physical distance between pairs of SNPs")
+lines(smoothingSpline_north,type="l",lwd=4,col="#ff4500")
+lines(smoothingSpline_scotland,type="l",lwd=4,col="#ffd700")
+
+
+
+
+
