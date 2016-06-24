@@ -13,12 +13,18 @@ vcffilter -f "SAF > 0 & SAR >0 & AB > 0.25 & AB < 0.75 & QUAL / DP > 0.25 & RPR 
 vcftools --vcf freebayes.SNPs.filtered.vcf --minDP 3 --maxDP 20 --max-missing 1 --recode --out freebayes.SNPs.filtered.final
 
 ##### generate random names for the SNPs
-wc -l freebayes.SNPs.filtered.final
-pwgen -1nc 15 805656 >random_names
-plink --vcf freebayes.SNPs.filtered.final --allow-extra-chr --make-bed
+vcf=freebayes.SNPs.filtered.final.recode.vcf
+
+n=$(grep -c "scf" $vcf)
+
+pwgen -1nc 15 $n >random_names
+plink --vcf $vcf --allow-extra-chr --make-bed
 paste plink.bim random_names >tmp
 awk '{print $1"\t"$7"\t"$3"\t"$4"\t"$5"\t"$6}' tmp >plink2.bim
-plink --bed plink.bed --bim plink2.bim --fam plink.fam --make-bed --out freebayes.QC --allow-extra-chr
+plink --bed plink.bed --bim plink2.bim --fam plink.fam --make-bed --allow-extra-chr 
+
+#### VCF file with SNP names is not "plink.bed" files
+
 
 # LD filtering
 # plink --bfile freebayes.QC --allow-extra-chr --indep-pairwise 20kb 20 0.2
