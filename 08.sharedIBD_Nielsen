@@ -37,6 +37,7 @@ python parse_within_pop_allpairs.py west None 1
 python parse_within_pop_allpairs.py west None 1
 python parse_between_pops_allpairs.py west south None 1
 
+## edit calc_ibs_backcoal_varmu.py to set mutaiton and recombination rate
 
 #### run model with minimum tract length of 100, 10 simulations and ageneration time of 2 years for each population
 python infer_onepop_adaptive_cumulative.py south_lengths.ibs 100 10 2
