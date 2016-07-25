@@ -9,6 +9,8 @@ setwd("E:/data/bam_fixrg_dedup/freebayes/popgen")
 #### construct map of interest, Northsea
 library(scales)
 library(rworldmap)
+library(igraph)
+
 newmap <- getMap(resolution = "high")
 plot(newmap, xlim = c(-6, 15), ylim = c(55, 63), asp = 2)
 loc=matrix(ncol=2,nrow=7)
@@ -44,6 +46,12 @@ rect(loc[6,1]+0.5,loc[6,2]-0.25,loc[6,1]+1.5,loc[6,2]+0.25,col="white",border=NA
 rect(loc[7,1]+0.5,loc[7,2]-0.25,loc[7,1]+1.5,loc[7,2]+0.25,col="white",border=NA)
 rect(loc[8,1]+0.5,loc[8,2]-0.25,loc[8,1]+1.5,loc[8,2]+0.25,col="white",border=NA)
 text(x=loc[,1]+1,y=loc[,2],label=index,cex=1,font=2,col=alpha("black",1))
+
+iArrows <- igraph:::igraph.Arrows
+  iArrows(x1=-5.88232,x2=5.73311, y1=56.76745, y2=58.96998,h.lwd=2, sh.lwd=2, sh.col="black",curve=0.5, width=1, size=0.7)
+  iArrows(x1=5.73311,x2=5.99980, y1=58.96998, y2=58.45142,h.lwd=2, sh.lwd=2, sh.col="black",curve=-3, width=1, size=0.7)
+  iArrows(x1=5.73311,x2=6.14564, y1=58.96998, y2=60.37089,h.lwd=2, sh.lwd=2, sh.col="black",curve=1, width=1, size=0.7)
+  
 dev.off()
 
 
