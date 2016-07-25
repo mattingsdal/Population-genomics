@@ -20,11 +20,14 @@ Stavanger=c(5.73311,58.96998)
 Norheimsund=c(6.14564,60.37089)
 Smola=c(8.00687,63.38657)
 Ardtoe=c(-5.88232,56.76745)
-index=c("A","B","C","D","E","F","G")
-col=c("#4169e1","#4169e1","#4169e1","#ff4500","#ff4500","#ff4500","#ffd700")
+Gullmarn=c(11.43333,58.25)
 
 
-tmp=data.frame(rbind(Tvedestrand,Arendal,Egersund,Stavanger,Norheimsund,Smola,Ardtoe))
+index=c("A","B","C","D","E","F","G","H")
+col=c("#4169e1","#4169e1","#4169e1","#ff4500","#ff4500","#ff4500","#ffd700","#4169e1")
+
+
+tmp=data.frame(rbind(Tvedestrand,Arendal,Egersund,Stavanger,Norheimsund,Smola,Ardtoe,Gullmarn))
 loc=cbind(tmp,index,col)
 
 Cairo(file="MAP.pdf",type="pdf",width=80,height=80,units="mm")
@@ -39,6 +42,7 @@ rect(loc[4,1]+0.5,loc[4,2]-0.25,loc[4,1]+1.5,loc[4,2]+0.25,col="white",border=NA
 rect(loc[5,1]+0.5,loc[5,2]-0.25,loc[5,1]+1.5,loc[5,2]+0.25,col="white",border=NA)
 rect(loc[6,1]+0.5,loc[6,2]-0.25,loc[6,1]+1.5,loc[6,2]+0.25,col="white",border=NA)
 rect(loc[7,1]+0.5,loc[7,2]-0.25,loc[7,1]+1.5,loc[7,2]+0.25,col="white",border=NA)
+rect(loc[8,1]+0.5,loc[8,2]-0.25,loc[8,1]+1.5,loc[8,2]+0.25,col="white",border=NA)
 text(x=loc[,1]+1,y=loc[,2],label=index,cex=1,font=2,col=alpha("black",1))
 dev.off()
 
