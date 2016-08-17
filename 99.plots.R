@@ -91,18 +91,19 @@ dev.off()
 #########################################################################
 ### heterozygosity
 
-het=read.table("all.het",sep="\t",header=T)
+het=read.table("plink.het",sep="",header=T)
 
 Group <- as.factor(c(
-rep("Arendal",8),
+rep("Arendal",7),
 rep("Ardtoe",8),
 rep("Egersund",8),
+rep("Gullmarsfjord",10),
 rep("Norheimsund",8),
 rep("Smola",8),
 rep("Stavanger",8),
 rep("Tvedestrand",8))
 )
-Location=c(rep(2,8),rep(7,8),rep(3,8),rep(5,8),rep(6,8),rep(4,8),rep(1,8))
+Location=c(rep(6,7),rep(1,8),rep(5,8),rep(8,10),rep(3,8),rep(2,8),rep(4,8),rep(7,8))
 
 HET=cbind(het,Group,Location)
 
@@ -110,7 +111,7 @@ Cairo(file="F.pdf",type="pdf",width=80,height=80,units="mm")
 par(mar = c(2,2,1,1))
 plot(HET$Location,HET$F,cex.axis=0.5,cex.lab=0.5,col=alpha(tmp2,0.5),pch=19,cex=2,lwd=0,ylab="F",xlab="Location", xaxt = "n")
 points(HET$Location,HET$F,col="black",pch=19,cex=0.5,lwd=0)
-axis(1, cex.axis=0.5,at=1:7, labels=c("A","B","C","D","E","F","G"))
+axis(1, cex.axis=0.5,at=1:8, labels=c("A","B","C","D","E","F","G","H"))
 dev.off()
 
 
