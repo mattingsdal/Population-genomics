@@ -238,5 +238,15 @@ lines(smoothingSpline_scotland,type="l",lwd=4,col="#ffd700")
 # resultfile= plink.frq.strat
 ~/software/plink --bfile plink --allow-extra-chr --freq --within pop.txt
 
+#### clustering using distance matrix prodiced by plink --genome
+
+tmp=read.table("plink.dist")
+tmp2=read.table("plink.dist.id")
+row.names(tmp)=tmp2[,1]
+colnames(tmp)=tmp2[,1]
+
+
+plot(hclust(dist(tmp)))
+
 
 
