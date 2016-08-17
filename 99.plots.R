@@ -63,7 +63,6 @@ loc=cbind(tmp,index,col)
 #  iArrows(x1=5.73311,x2=5.99980, y1=58.96998, y2=58.45142,h.lwd=2, sh.lwd=2, sh.col="black",curve=-3, width=1, size=0.7)
 #  iArrows(x1=5.73311,x2=6.14564, y1=58.96998, y2=60.37089,h.lwd=2, sh.lwd=2, sh.col="black",curve=1, width=1, size=0.7)
   
-dev.off()
 
 
 #########################################################################
@@ -78,13 +77,13 @@ mv plink.mds popgen/
 
 R
 pca=read.table("plink.mds",sep="",header=T)
-tmp=c(rep("B",8),rep("G",8),rep("C",8),rep("E",8),rep("F",8),rep("D",8),rep("A",8))
-tmp2=c(rep("#4169e1",8),rep("#ffd700",8),rep("#4169e1",8),rep("#ff4500",8),rep("#ff4500",8),rep("#ff4500",8),rep("#4169e1",8))
+tmp=c(rep("F",7),rep("A",8),rep("E",8),rep("H",10),rep("C",8),rep("D",8),rep("B",8),rep("G",8))
+tmp2=c(rep("#4169e1",7),rep("#ffd700",8),rep("#4169e1",8),rep("#4169e1",10),rep("#ff4500",8),rep("#ff4500",8),rep("#ff4500",8),rep("#4169e1",8))
 pca2=cbind(pca,tmp,tmp2)
 
 Cairo(file="PCA.pdf",type="pdf",width=80,height=80,units="mm")
 par(mar = c(2,2,1,1))
-plot(pca$C1,pca$C2,pch=19,cex=2,cex.axis=0.5,cex.lab=0.5,lwd=0,col=alpha(as.character(pca2[,7]),0.5),xlab="PC1",ylab="PC2")
+plot(pca$C1,pca$C2,pch=19,cex=2,cex.axis=0.5,cex.lab=0.5,lwd=0,col=alpha(as.character(pca2[,8]),0.5),xlab="PC1",ylab="PC2")
 text(x=pca$C1,y=pca$C2,label=as.character(tmp),cex=0.5,font=2,col=alpha("black",1))
 dev.off()
 
