@@ -37,6 +37,7 @@ par(mar = rep(0, 4))
 plot(newmap, xlim = c(-6, 15), ylim = c(55, 63), asp = 2,lwd=1,col="gray95")
 points(loc, col = alpha(loc$col,0.5), cex = 2,lwd=0,pch=19)
 points(loc, col = "black", cex = 0.5,lwd=0,pch=19)
+
 rect(loc[1,1]+0.5,loc[1,2]-0.25,loc[1,1]+1.5,loc[1,2]+0.25,col="white",border=NA)
 rect(loc[2,1]+0.5,loc[2,2]-0.25,loc[2,1]+1.5,loc[2,2]+0.25,col="white",border=NA)
 rect(loc[3,1]+0.5,loc[3,2]-0.25,loc[3,1]+1.5,loc[3,2]+0.25,col="white",border=NA)
@@ -45,12 +46,22 @@ rect(loc[5,1]+0.5,loc[5,2]-0.25,loc[5,1]+1.5,loc[5,2]+0.25,col="white",border=NA
 rect(loc[6,1]+0.5,loc[6,2]-0.25,loc[6,1]+1.5,loc[6,2]+0.25,col="white",border=NA)
 rect(loc[7,1]+0.5,loc[7,2]-0.25,loc[7,1]+1.5,loc[7,2]+0.25,col="white",border=NA)
 rect(loc[8,1]+0.5,loc[8,2]-0.25,loc[8,1]+1.5,loc[8,2]+0.25,col="white",border=NA)
+
+#text(x=loc[,1]+1,y=loc[,2],label=index,cex=1,font=2,col=alpha("black",1))
+loc[6,2]=58.17000
+
 text(x=loc[,1]+1,y=loc[,2],label=index,cex=1,font=2,col=alpha("black",1))
 
-iArrows <- igraph:::igraph.Arrows
-  iArrows(x1=-5.88232,x2=5.73311, y1=56.76745, y2=58.96998,h.lwd=2, sh.lwd=2, sh.col="black",curve=0.5, width=1, size=0.7)
-  iArrows(x1=5.73311,x2=5.99980, y1=58.96998, y2=58.45142,h.lwd=2, sh.lwd=2, sh.col="black",curve=-3, width=1, size=0.7)
-  iArrows(x1=5.73311,x2=6.14564, y1=58.96998, y2=60.37089,h.lwd=2, sh.lwd=2, sh.col="black",curve=1, width=1, size=0.7)
+dev.off()
+
+loc=cbind(tmp,index,col)
+
+
+
+# iArrows <- igraph:::igraph.Arrows
+#  iArrows(x1=-5.88232,x2=5.73311, y1=56.76745, y2=58.96998,h.lwd=2, sh.lwd=2, sh.col="black",curve=0.5, width=1, size=0.7)
+#  iArrows(x1=5.73311,x2=5.99980, y1=58.96998, y2=58.45142,h.lwd=2, sh.lwd=2, sh.col="black",curve=-3, width=1, size=0.7)
+#  iArrows(x1=5.73311,x2=6.14564, y1=58.96998, y2=60.37089,h.lwd=2, sh.lwd=2, sh.col="black",curve=1, width=1, size=0.7)
   
 dev.off()
 
@@ -222,6 +233,10 @@ lines(smoothingSpline_north,type="l",lwd=4,col="#ff4500")
 lines(smoothingSpline_scotland,type="l",lwd=4,col="#ffd700")
 
 
+
+### Distribution of frequencies
+# resultfile= plink.frq.strat
+~/software/plink --bfile plink --allow-extra-chr --freq --within pop.txt
 
 
 
