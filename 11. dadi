@@ -9,11 +9,39 @@ cd ~data/bam_fixrg_dedup/freebayes/dadi
 perl convert_vcf_2_dadi.pl ~/data/symphodus_melops.fasta freebayes.SNPs.filtered.final.98.recode.vcf list2
 
 python import dadi
+import dadi
+
+dd = dadi.Misc.make_data_dict('list2.data')
+folded = dadi.Spectrum.from_data_dict(dd, ['Skagerak','Northsea'], [10,10], polarized=False)
+import pylab
+dadi.Plotting.plot_single_2d_sfs(folded, vmin=0.1)
+pylab.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # read data and make dictionary
 dd = dadi.Misc.make_data_dict('list2.data')
 
 #now we can make a spectrum with this data
+folded = dadi.Spectrum.from_data_dict(dd, ['Skagerak','Northsea'], [10,10], polarized=False)
+
 fs = dadi.Spectrum.from_data_dict(dd, ['1','2','3'],[20,20,20])
 
 #make one we can plot
