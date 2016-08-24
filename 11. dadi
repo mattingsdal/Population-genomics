@@ -1,0 +1,30 @@
+# use script to convert vcf to dadi SFS
+#  https://groups.google.com/group/dadi-user/attach/15ae6994986666dc/convert_vcf_to_dadi_input.pl?part=0.1&authuser=0&view=1
+#
+# requirs vcffile, genomefastafile and a list file decribing the samples, 2 columns
+# 
+
+cd ~data/bam_fixrg_dedup/freebayes/dadi
+
+perl convert_vcf_2_dadi.pl ~/data/symphodus_melops.fasta freebayes.SNPs.filtered.final.98.recode.vcf list2
+
+python import dadi
+
+# read data and make dictionary
+dd = dadi.Misc.make_data_dict('list2.data')
+
+#now we can make a spectrum with this data
+fs = dadi.Spectrum.from_data_dict(dd, ['1','2','3'],[20,20,20])
+
+#make one we can plot
+newfs = dadi.Spectrum.from_data_dict(dd, ['1','2'],[20,20])
+
+import pylab
+dadi.Plotting.plot_single_2d_sfs(newfs, vmin=0.1)
+pylab.show()
+
+#make a 'scrambled' plot
+
+scrambled = newfs.scramble_pop_ids()
+dadi.Plotting.plot_single_2d_sfs(scrambled, vmin=0.1)
+pylab.show()
