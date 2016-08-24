@@ -1,0 +1,5 @@
+## estimate recombination rates similarity as PUBMEDID: 25902173
+
+# flow: use vcftools to export LDhat iinput files (only takes 1 chr at the time)
+
+https://github.com/ejschwarzkopf/recombination-map
