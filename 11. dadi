@@ -161,10 +161,16 @@ pylab.savefig('Skagerak_Northsea.2Dsnm.png', dpi=300)
 
 
 # Note on units
+# mij = migration rate
+# Ne = effective population
+# mu = mutaiton rate
+# K = numer of segregating sites
+# L = numer of SNPs
+# g = generation time
 
 # For example, I have got θ, nu, mij and T.
 # In dadi manual, Nref is calculated with θ/4u. While, in some papers with SNP data, θ/4uL is used to get Nref,
-# where L is number of analyzed sites. Which equation is OK? 
+# where L is number of analyzed sites. Which equation is OK? = theta = 4*mu*L*Nref 
 # Additionally, if I got Nref=1000, nu=0.5, mij=0.2 , T=2 and generation time g=2 :
 # Real time = 2*Nref*T*g = 2*1000*2*2 = 8000 years
 # Real population size = nu*Nref = 0.5*1000 = 500 individuals
