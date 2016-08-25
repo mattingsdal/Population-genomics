@@ -12,6 +12,8 @@ perl convert_vcf_2_dadi.pl ~/data/symphodus_melops.fasta freebayes.SNPs.filtered
 python
 import numpy 
 import dadi
+import pylab
+
 
 ################
 # load  data
@@ -87,7 +89,9 @@ print('Beginning optimization ************************************************')
 popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
                                    lower_bound=lower_bound,
                                    upper_bound=upper_bound,
-                                   verbose=len(p0), maxiter=1000)
+                                   verbose=len(p0),maxiter=1000)
+# The verbose argument controls how often progress of the optimizer should be
+# printed. It's useful to keep track of optimization process.
 # The verbose argument controls how often progress of the optimizer should be
 # printed. It's useful to keep track of optimization process.
 print('Finshed optimization **************************************************')
@@ -113,23 +117,33 @@ pylab.savefig('Skagerak_Northsea.2Dsnm.png', dpi=300)
 
 
 ############################################################ BOTTLEGROWTH ########################################################
+# Params are nuB,nuF,TF; 
+# nuB: Ratio of bottleneck population size to ancient pop size, 
+# nuF: Ratio of contemporary to ancient pop size,
+# TF: Time since bottleneck recovery
 
+nuB=5
+nuF=5
+T=100
 
-# define 2D netural model
-# nuB = Ratio of population size after instantanous change to ancient population size
-# nuF = Ratio of contempoary to ancient population size
-# T = Time in the past at which instantaneous change happened and growth began (in units of 2*Na generations) 
+params = (nuB,nuF,T)
+
 
 func = dadi.Demographics2D.bottlegrowth
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
+upper_bound = [50,5,200]
+lower_bound = [0.001,0.001,20] 
+
+p0 = dadi.Misc.perturb_params(params, fold=2, lower_bound = lower_bound, upper_bound = upper_bound)
+
 ##########################
 #### optimization
 print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize_log(p0, data, func_ex, nuB, nuF, T, pts_l, 
+popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
                                    lower_bound=lower_bound,
                                    upper_bound=upper_bound,
-                                   verbose=len(p0), maxiter=1000)
+                                   verbose=len(p0),maxiter=10000)
 # The verbose argument controls how often progress of the optimizer should be
 # printed. It's useful to keep track of optimization process.
 print('Finshed optimization **************************************************')
@@ -145,13 +159,121 @@ model = func_ex(popt, ns, pts_l)
 ll_model = dadi.Inference.ll_multinom(model, data)
 print('Maximum log composite likelihood: {0}'.format(ll_model))
 # Plot a comparison of the resulting fs with the data.
-import pylab
 pylab.figure(1)
 dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=3,pop_ids =('Skagerak','Northsea'))
 print('Maximum log composite likelihood: {0}'.format(ll_model))
-pylab.savefig('Skagerak_Northsea.2Dsnm.png', dpi=300)
+pylab.savefig('Skagerak_Northsea.2D.bottlegrowth.png', dpi=300)
 # end print results and make plot
 #############################
+
+
+############################################################ BOTTLEGROWTH SPLIT #####################################################
+# Params are nuB,nuF,TF; 
+# nuB: Ratio of bottleneck population size to ancient pop size, 
+# nuF: Ratio of contemporary to ancient pop size,
+# TF: Time since bottleneck recovery
+params = (nuB,nuF,T,Ts)
+
+nuB=7
+nuF=10
+T=5000
+Ts=10
+
+params = (nuB,nuF,T,Ts)
+
+
+func = dadi.Demographics2D.bottlegrowth_split
+func_ex = dadi.Numerics.make_extrap_log_func(func)
+
+upper_bound = [7,20,6000,100]
+lower_bound = [4,10,4000,1] 
+
+p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
+
+##########################
+#### optimization
+print('Beginning optimization ************************************************')
+popt = dadi.Inference.optimize_log_lbfgsb(p0, data, func_ex, pts_l, 
+                                   lower_bound=lower_bound,
+                                   upper_bound=upper_bound,
+                                   verbose=len(p0),maxiter=10000)
+# The verbose argument controls how often progress of the optimizer should be
+# printed. It's useful to keep track of optimization process.
+print('Finshed optimization **************************************************')
+# end optimization 
+#############################
+# dadi.Inference.optimize
+##########################
+#### print results and make plot
+print('Best-fit parameters: {0}'.format(popt))
+# Calculate the best-fit model AFS.
+model = func_ex(popt, ns, pts_l)
+# Likelihood of the data given the model AFS.
+ll_model = dadi.Inference.ll_multinom(model, data)
+print('Maximum log composite likelihood: {0}'.format(ll_model))
+# Plot a comparison of the resulting fs with the data.
+pylab.figure(1)
+dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=3,pop_ids =('Skagerak','Northsea'))
+print('Maximum log composite likelihood: {0}'.format(ll_model))
+pylab.savefig('Skagerak_Northsea.2D.bottlegrowth.png', dpi=300)
+# end print results and make plot
+#############################
+
+
+
+############################################################ IM_pre ########################################################
+# Isolation-with-migration model with exponential pop growth and a size change prior to split.
+# params = (nuPre,TPre,s,nu1,nu2,T,m12,m21)
+
+nuPre=5
+TPre = 10
+s = 0.01
+nu1 = 5
+nu2 = 5
+T= 1000
+m12=0
+m21=0
+
+
+params = (nuPre,TPre,s,nu1,nu2,T,m12,m21)
+
+func = dadi.Demographics2D.IM_pre
+func_ex = dadi.Numerics.make_extrap_log_func(func)
+
+upper_bound = [10,20, 0.1,10,10,2000,0,0]
+lower_bound = [0.01,0.01, 0.001,0.1,0.1,10,0,0] 
+
+p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
+
+##########################
+#### optimization
+print('Beginning optimization ************************************************')
+popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
+                                   lower_bound=lower_bound,
+                                   upper_bound=upper_bound,
+                                   verbose=len(p0),maxiter=10000)
+# The verbose argument controls how often progress of the optimizer should be
+# printed. It's useful to keep track of optimization process.
+print('Finshed optimization **************************************************')
+# end optimization 
+#############################
+
+##########################
+#### print results and make plot
+print('Best-fit parameters: {0}'.format(popt))
+# Calculate the best-fit model AFS.
+model = func_ex(popt, ns, pts_l)
+# Likelihood of the data given the model AFS.
+ll_model = dadi.Inference.ll_multinom(model, data)
+print('Maximum log composite likelihood: {0}'.format(ll_model))
+# Plot a comparison of the resulting fs with the data.
+pylab.figure(1)
+dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=3,pop_ids =('Skagerak','Northsea'))
+print('Maximum log composite likelihood: {0}'.format(ll_model))
+pylab.savefig('Skagerak_Northsea.2D.bottlegrowth.png', dpi=300)
+# end print results and make plot
+#############################
+
 
 
 
