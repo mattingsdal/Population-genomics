@@ -1,3 +1,8 @@
+# FIRST: make sure to have unfolded data, derived / ancestral state is defined
+# recommendations: if you have outgroup or ancient population, extract new SNPs, by excluding monomorphic SNPs in ancient population.
+# use for instance vcftools count/ freq for this compare counts and keep snps that are monomorphic in ancient population
+
+
 #  use script to convert vcf to dadi SFS
 #  https://groups.google.com/group/dadi-user/attach/15ae6994986666dc/convert_vcf_to_dadi_input.pl?part=0.1&authuser=0&view=1
 #
@@ -134,7 +139,7 @@ params = (nuB,nuF,T)
 func = dadi.Demographics2D.bottlegrowth
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [50,5,200]
+upper_bound = [20,20,200]
 lower_bound = [0.001,0.001,20] 
 
 p0 = dadi.Misc.perturb_params(params, fold=2, lower_bound = lower_bound, upper_bound = upper_bound)
@@ -174,6 +179,8 @@ pylab.savefig('Skagerak_Northsea.2D.bottlegrowth.png', dpi=300)
 # nuB: Ratio of bottleneck population size to ancient pop size, 
 # nuF: Ratio of contemporary to ancient pop size,
 # TF: Time since bottleneck recovery
+# Ts = Time in the past at which the two populations split
+
 params = (nuB,nuF,T,Ts)
 
 nuB=7
@@ -187,15 +194,15 @@ params = (nuB,nuF,T,Ts)
 func = dadi.Demographics2D.bottlegrowth_split
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [7,20,10000,2]
-lower_bound = [5,15,2000,1] 
+upper_bound = [100,100,10000,10000]
+lower_bound = [1,1,100,100] 
 
 p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
 
 ##########################
 #### optimization
 print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize_log_lbfgsb(p0, data, func_ex, pts_l, 
+popt = dadi.Inference.optimize(p0, data, func_ex, pts_l, 
                                    lower_bound=lower_bound,
                                    upper_bound=upper_bound,
                                    verbose=len(p0),maxiter=10000)
