@@ -35,7 +35,13 @@ cat ~/data/symphodus_melops.fasta | vcf-consensus ARD_only.recode.vcf.gz -s ARD1
 # requires a vcffile, genomefastafile and a list file decribing the samples, 2 columns
 
 cd ~data/bam_fixrg_dedup/freebayes/dadi
+
+# 2D analysis
 perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf list2
+
+#1D analysis
+perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf northsea
+perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf skagerak
 
 
 
@@ -45,12 +51,17 @@ import numpy
 import dadi
 import pylab
 
+################ 1D
+dd = dadi.Misc.make_data_dict('northsea.data')
+N = dadi.Spectrum.from_data_dict(dd, ['Northsea'], [24], polarized=True)
+dd = dadi.Misc.make_data_dict('skagerak.data')
+S = dadi.Spectrum.from_data_dict(dd, ['Skagerak'], [33], polarized=True)
 
-################
+################ 2D
 # load  data
 print 'Reading data'
 dd = dadi.Misc.make_data_dict('list2.data')
-data = dadi.Spectrum.from_data_dict(dd, ['Skagerak','Northsea'], [33,24], polarized=False)
+data = dadi.Spectrum.from_data_dict(dd, ['Skagerak','Northsea'], [33,24], polarized=True)
 # end loading data
 ################
 
@@ -72,22 +83,91 @@ print "Watterson's theta:", theta_w
 # end calculate descriptive statistics
 ################
 
+
+
+
+pylab.figure(1)
+dadi.Plotting.plot_single_2d_sfs(data, vmin=1, vmax=20000) 
 ##########################
-#### pre-otimization steps
-# define grid size
-pts_l = [30,40,50]
+first explore 1D models
 
-# define bounds 
-# bound are IMPORTANT. they contain the solotion. 
-upper_bound = [100, 100, 100, 10, 3, 3]
-lower_bound = [1e-2, 1e-2, 1e-2, 0, 0, 0]
+############################################################ 1D model, growth ###################################################
+# growth(params, ns, pts)
 
-#parametrs
-p0 = [2,0.1,2,1,0.2,0.2]
-# Perturb our parameters before optimization.
-p0 = dadi.Misc.perturb_params(p0, fold=1, upper_bound=upper_bound,lower_bound=lower_bound)
-# end-optimization steps
+nu=5
+T=100
+
+params = (nu,T)
+func = dadi.Demographics1D.growth
+func_ex = dadi.Numerics.make_extrap_log_func(func)
+
+upper_bound = [10,1000]
+lower_bound = [0.001,0.1] 
+pts_l = [40,50,60]
+p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
+
+#### optimization
+print('Beginning optimization ************************************************')
+popt = dadi.Inference.optimize_log(p0, S, func_ex, pts_l, 
+                                   lower_bound=lower_bound,
+                                   upper_bound=upper_bound,
+                                   verbose=len(p0),maxiter=20)
+# The verbose argument controls how often progress of the optimizer should be
+# printed. It's useful to keep track of optimization process.
+# The verbose argument controls how often progress of the optimizer should be
+# printed. It's useful to keep track of optimization process.
+print('Finshed optimization **************************************************')
+# end optimization 
 #############################
+ns=[33]
+model = func_ex(popt, ns, pts_l)
+# Likelihood of the data given the model AFS.
+ll_model = dadi.Inference.ll_multinom(model, data)
+pylab.figure(1)
+dadi.Plotting.plot_1d_comp_multinom(model, S)
+print('Maximum log composite likelihood: {0}'.format(ll_model))
+
+############################################################ 1D model, growth ###################################################
+# growth(params, ns, pts)
+
+nuB=5
+nuF=5
+T=100
+
+params = (nuB,nuF,T)
+func = dadi.Demographics1D.bottlegrowth
+func_ex = dadi.Numerics.make_extrap_log_func(func)
+
+upper_bound = [10,30,1000]
+lower_bound = [0.01,10,0.1] 
+pts_l = [40,50,60]
+p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
+
+#### optimization
+print('Beginning optimization ************************************************')
+popt = dadi.Inference.optimize_log(p0, S, func_ex, pts_l, 
+                                   lower_bound=lower_bound,
+                                   upper_bound=upper_bound,
+                                   verbose=len(p0),maxiter=20)
+# The verbose argument controls how often progress of the optimizer should be
+# printed. It's useful to keep track of optimization process.
+# The verbose argument controls how often progress of the optimizer should be
+# printed. It's useful to keep track of optimization process.
+print('Finshed optimization **************************************************')
+# end optimization 
+#############################
+ns=[33]
+model = func_ex(popt, ns, pts_l)
+# Likelihood of the data given the model AFS.
+ll_model = dadi.Inference.ll_multinom(model, data)
+pylab.figure(1)
+dadi.Plotting.plot_1d_comp_multinom(model, S)
+print('Maximum log composite likelihood: {0}'.format(ll_model))
+
+
+
+
+
 
 # we will use all models provided in dady "Demographics2D.py"
 # 1. snm =  Standard neutral model, populations never diverge.
@@ -113,12 +193,13 @@ p0 = dadi.Misc.perturb_params(p0, fold=1, upper_bound=upper_bound,lower_bound=lo
 
 # define 2D netural model
 func = dadi.Demographics2D.snm
-func_ex = dadi.Numerics.make_extrap_log_func(func)
-
+func_ex = dadi.Numerics.make_extrap_func(func)
+params=[ ]
+p0 = dadi.Misc.perturb_params(params)
 ##########################
 #### optimization
 print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
+popt = dadi.Inference.optimize(p0, data, func_ex, pts_l, 
                                    lower_bound=lower_bound,
                                    upper_bound=upper_bound,
                                    verbose=len(p0),maxiter=1000)
@@ -160,12 +241,11 @@ T=100
 
 params = (nuB,nuF,T)
 
-
 func = dadi.Demographics2D.bottlegrowth
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [10,10,200]
-lower_bound = [0.001,0.001,20] 
+upper_bound = [10,10,10]
+lower_bound = [0.001,0.001,0.01] 
 
 p0 = dadi.Misc.perturb_params(params, fold=2, lower_bound = lower_bound, upper_bound = upper_bound)
 
@@ -175,7 +255,7 @@ print('Beginning optimization ************************************************')
 popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
                                    lower_bound=lower_bound,
                                    upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=10000)
+                                   verbose=len(p0),maxiter=20)
 # The verbose argument controls how often progress of the optimizer should be
 # printed. It's useful to keep track of optimization process.
 print('Finshed optimization **************************************************')
@@ -186,6 +266,7 @@ print('Finshed optimization **************************************************')
 #### print results and make plot
 print('Best-fit parameters: {0}'.format(popt))
 # Calculate the best-fit model AFS.
+ns=[33,24]
 model = func_ex(popt, ns, pts_l)
 # Likelihood of the data given the model AFS.
 ll_model = dadi.Inference.ll_multinom(model, data)
@@ -219,15 +300,15 @@ params = (nuB,nuF,T,Ts)
 func = dadi.Demographics2D.bottlegrowth_split
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [100,100,1000,10]
-lower_bound = [10,10,100,1] 
+upper_bound = [10,10,500,10]
+lower_bound = [1,1,100,0.01] 
 
 p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
 
 ##########################
 #### optimization
 print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize(p0, data, func_ex, pts_l, 
+popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
                                    lower_bound=lower_bound,
                                    upper_bound=upper_bound,
                                    verbose=len(p0),maxiter=10)
