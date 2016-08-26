@@ -1,16 +1,41 @@
 # FIRST: make sure to have unfolded data, derived / ancestral state is defined
 # recommendations: if you have outgroup or ancient population, extract new SNPs, by excluding monomorphic SNPs in ancient population.
 # use for instance vcftools count/ freq for this compare counts and keep snps that are monomorphic in ancient population
+# usecontruct consensus sequence using ancient pop
 
+vcftools --vcf  freebayes.SNPs.filtered.final.98.recode.vcf --keep ../pop/norway --counts2 --out norway
+vcftools --vcf  freebayes.SNPs.filtered.final.98.recode.vcf --keep ../pop/ARD --counts2 --out ARD 
+
+## start R
+R
+ard_f=read.table("ARD.frq",sep="\t",header=T,fill=T,row.names=NULL)
+ard_c=read.table("ARD.frq.count",sep="\t",header=T,fill=T,row.names=NULL)
+norway_f=read.table("norway.frq",sep="\t",header=T,fill=T,row.names=NULL)
+norway_c=read.table("norway.frq.count",sep="\t",header=T,fill=T,row.names=NULL)
+# extract snps which freq = 0 in ancient population
+anc=ARD[ARD[,8]==0,5]
+res=NOR[ARD[,8]==0,]
+out=cbind(res,anc)
+out2=na.omit(out)
+write.table(out2,"keep",row.names=F,quote=F,sep="\t")
+## end R
+
+## use first two columns to extract snps, edit file
+awk '{print $1"\t"$2}' keep >keep2
+
+vcftools --vcf  freebayes.SNPs.filtered.final.98.recode.vcf --keep ../pop/norway --positions keep2 --recode --out unique
+scp unique.recode.vcf dadi/
+
+# construct consesnus fasta sequence
+cat ~/data/symphodus_melops.fasta | vcf-consensus ARD_only.recode.vcf.gz -s ARD15 > ARD.consensus.fasta
 
 #  use script to convert vcf to dadi SFS
 #  https://groups.google.com/group/dadi-user/attach/15ae6994986666dc/convert_vcf_to_dadi_input.pl?part=0.1&authuser=0&view=1
 #
 # requires a vcffile, genomefastafile and a list file decribing the samples, 2 columns
-# 
 
 cd ~data/bam_fixrg_dedup/freebayes/dadi
-perl convert_vcf_2_dadi.pl ~/data/symphodus_melops.fasta freebayes.SNPs.filtered.final.98.recode.vcf list2
+perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf list2
 
 
 
@@ -50,7 +75,7 @@ print "Watterson's theta:", theta_w
 ##########################
 #### pre-otimization steps
 # define grid size
-pts_l = [40,50,60]
+pts_l = [30,40,50]
 
 # define bounds 
 # bound are IMPORTANT. they contain the solotion. 
@@ -139,7 +164,7 @@ params = (nuB,nuF,T)
 func = dadi.Demographics2D.bottlegrowth
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [20,20,200]
+upper_bound = [10,10,200]
 lower_bound = [0.001,0.001,20] 
 
 p0 = dadi.Misc.perturb_params(params, fold=2, lower_bound = lower_bound, upper_bound = upper_bound)
@@ -194,8 +219,8 @@ params = (nuB,nuF,T,Ts)
 func = dadi.Demographics2D.bottlegrowth_split
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [100,100,10000,10000]
-lower_bound = [1,1,100,100] 
+upper_bound = [100,100,1000,10]
+lower_bound = [10,10,100,1] 
 
 p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
 
@@ -205,7 +230,7 @@ print('Beginning optimization ************************************************')
 popt = dadi.Inference.optimize(p0, data, func_ex, pts_l, 
                                    lower_bound=lower_bound,
                                    upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=10000)
+                                   verbose=len(p0),maxiter=10)
 # The verbose argument controls how often progress of the optimizer should be
 # printed. It's useful to keep track of optimization process.
 print('Finshed optimization **************************************************')
