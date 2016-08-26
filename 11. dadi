@@ -1,14 +1,15 @@
-# use script to convert vcf to dadi SFS
+#  use script to convert vcf to dadi SFS
 #  https://groups.google.com/group/dadi-user/attach/15ae6994986666dc/convert_vcf_to_dadi_input.pl?part=0.1&authuser=0&view=1
 #
-# requirs vcffile, genomefastafile and a list file decribing the samples, 2 columns
+# requires a vcffile, genomefastafile and a list file decribing the samples, 2 columns
 # 
 
 cd ~data/bam_fixrg_dedup/freebayes/dadi
-
 perl convert_vcf_2_dadi.pl ~/data/symphodus_melops.fasta freebayes.SNPs.filtered.final.98.recode.vcf list2
 
-# Start dady
+
+
+# Start dadi
 python
 import numpy 
 import dadi
@@ -46,7 +47,8 @@ print "Watterson's theta:", theta_w
 # define grid size
 pts_l = [40,50,60]
 
-# define bounds
+# define bounds 
+# bound are IMPORTANT. they contain the solotion. 
 upper_bound = [100, 100, 100, 10, 3, 3]
 lower_bound = [1e-2, 1e-2, 1e-2, 0, 0, 0]
 
@@ -185,8 +187,8 @@ params = (nuB,nuF,T,Ts)
 func = dadi.Demographics2D.bottlegrowth_split
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [7,20,6000,100]
-lower_bound = [4,10,4000,1] 
+upper_bound = [7,20,10000,2]
+lower_bound = [5,15,2000,1] 
 
 p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
 
