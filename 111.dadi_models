@@ -6,7 +6,7 @@ import site
 site.addsitedir('/data3/users/christec/dadi/dadi-1.6.3_modif')
 import dadi
 
-
+http://datadryad.org/bitstream/handle/10255/dryad.118165/dadi_define_models.py?sequence=1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Defines the different models of divergence used in our inferences with DADI.
