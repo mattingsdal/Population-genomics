@@ -51,11 +51,7 @@ import numpy
 import dadi
 import pylab
 
-################ 1D
-dd = dadi.Misc.make_data_dict('northsea.data')
-N = dadi.Spectrum.from_data_dict(dd, ['Northsea'], [24], polarized=True)
-dd = dadi.Misc.make_data_dict('skagerak.data')
-S = dadi.Spectrum.from_data_dict(dd, ['Skagerak'], [33], polarized=True)
+
 
 ################ 2D
 # load  data
@@ -64,6 +60,11 @@ dd = dadi.Misc.make_data_dict('list2.data')
 data = dadi.Spectrum.from_data_dict(dd, ['Skagerak','Northsea'], [33,24], polarized=True)
 # end loading data
 ################
+
+################ 1D
+N = data.marginalize([1)]
+N = dadi.Spectrum.from_data_dict(dd, ['Northsea'], [24], polarized=True)
+S = dadi.Spectrum.from_data_dict(dd, ['Skagerak'], [33], polarized=True)
 
 ################
 ### Calculate descriptive statistics
@@ -237,17 +238,15 @@ pylab.savefig('Skagerak_Northsea.2Dsnm.png', dpi=300)
 # nuF: Ratio of contemporary to ancient pop size,
 # TF: Time since bottleneck recovery
 
-nuB=5
-nuF=5
-T=100
 
-params = (nuB,nuF,T)
+
+params = [1,1,1]
 
 func = dadi.Demographics2D.bottlegrowth
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [10,10,1000]
-lower_bound = [0.001,0.001,0] 
+upper_bound = [10,10,20]
+lower_bound = [0.001,0.001,0.001] 
 
 p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
 
@@ -302,10 +301,10 @@ params = (nuB,nuF,T,Ts)
 func = dadi.Demographics2D.bottlegrowth_split
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [100,100,5000,1000]
-lower_bound = [1,1,1000,0] 
+upper_bound = [10,10,20,20]
+lower_bound = [0.01,0.01,0.01,0.01] 
 
-p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
+p0 = dadi.Misc.perturb_params(params, fold=2 lower_bound = lower_bound, upper_bound = upper_bound)
 
 ##########################
 #### optimization
@@ -357,8 +356,8 @@ params = (nuPre,TPre,s,nu1,nu2,T,m12,m21)
 func = dadi.Demographics2D.IM_pre
 func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [10,20, 0.1,10,10,2000,0,0]
-lower_bound = [0.01,0.01, 0.001,0.1,0.1,10,0,0] 
+upper_bound = [100,100,100,100,100,100,100,100]
+lower_bound = [0.01,0.01, 0.001,0.01,0.01,0.01,0.01,0.01] 
 
 p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
 
@@ -368,7 +367,7 @@ print('Beginning optimization ************************************************')
 popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
                                    lower_bound=lower_bound,
                                    upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=10000)
+                                   verbose=len(p0),maxiter=10)
 # The verbose argument controls how often progress of the optimizer should be
 # printed. It's useful to keep track of optimization process.
 print('Finshed optimization **************************************************')
