@@ -1,3 +1,5 @@
+# use mpirun -c python "name.py"
+
 import numpy
 import dadi
 import pylab
