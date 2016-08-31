@@ -1,0 +1,38 @@
+import numpy
+import dadi
+import pylab
+import demo
+
+try:
+    from mpi4py import MPI
+    comm = MPI.COMM_WORLD
+    myrank = comm.Get_rank()
+except:
+    raise ImportError('mpi4py is required for parallelization')
+
+
+## read data, and export dadi spectrum
+dd = dadi.Misc.make_data_dict('list2.data')
+data = dadi.Spectrum.from_data_dict(dd, ['Skagerak','Northsea'], [66,48], polarized=True)
+
+#permute
+# perm=data.scramble_pop_ids
+
+# write to file
+# data.to_file('spectrum_from_dadi.v6.fs')
+
+# housekeeping
+ns = [66,48]
+pts_l = [100]
+
+params = [1,1,1]
+func = dadi.Demographics2D.bottlegrowth
+func_ex = dadi.Numerics.make_extrap_log_func(func)
+upper_bound = [10,10,10]
+lower_bound = [0.01,0.01,0.01]
+
+p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
+popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, lower_bound=lower_bound,upper_bound=upper_bound,verbose=len(p0),maxiter=20)
+model = func_ex(popt, ns, pts_l)
+ll_model = dadi.Inference.ll_multinom(model, data)
+print 'Optimized log-likelihood:', ll_model
