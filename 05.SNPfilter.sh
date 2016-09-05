@@ -6,7 +6,13 @@
 
 vcftools --vcf freebayes.vcf --remove-indels --recode --recode-INFO-all --out freebayes.SNPs
 
-vcffilter -f "SAF > 0 & SAR >0 & AB > 0.25 & AB < 0.75 & QUAL / DP > 0.25 & RPR > 1 & RPL > 1" freebayes.SNPs.recode.vcf >freebayes.SNPs.filtered.vcf
+# SAF % SAR = remove alleles only seen in one strand
+# AB = allelic balance
+# RPL > 0 & RPR > 0 removes SNPs with reads only to the left / right
+
+# vcffilter -f "SAF > 0 & SAR >0 & AB > 0.25 & AB < 0.75 & QUAL / DP > 0.25 & RPR > 1 & RPL > 1" freebayes.SNPs.recode.vcf >freebayes.SNPs.filtered.vcf
+
+vcffilter -f "QUAL > 1 & QUAL / AO > 10 & SAF > 0 & SAR > 0 & RPR > 1 & RPL > 1" freebayes.SNPs.recode.vcf >freebayes.SNPs.filtered.vcf
 
 ### minDP x 1/3 of averadge depth = 
 ### maxDP x2 averadge depth       =
