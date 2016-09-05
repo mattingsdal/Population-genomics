@@ -3,8 +3,8 @@
 # use for instance vcftools count/ freq for this compare counts and keep snps that are monomorphic in ancient population
 # usecontruct consensus sequence using ancient pop
 
-vcftools --vcf  freebayes.SNPs.filtered.final.98.recode.vcf --keep ../pop/norway --counts2 --out norway
-vcftools --vcf  freebayes.SNPs.filtered.final.98.recode.vcf --keep ../pop/ARD --counts2 --out ARD 
+vcftools --vcf  freebayes.SNPs.filtered.vcf --keep ../pop/norway --counts2 --out norway
+vcftools --vcf  freebayes.SNPs.filtered.vcf --keep ../pop/ARD --counts2 --out ARD 
 
 ## start R
 R
