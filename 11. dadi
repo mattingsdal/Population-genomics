@@ -13,17 +13,15 @@ ard_c=read.table("ARD.frq.count",sep="\t",header=T,fill=T,row.names=NULL)
 norway_f=read.table("norway.frq",sep="\t",header=T,fill=T,row.names=NULL)
 norway_c=read.table("norway.frq.count",sep="\t",header=T,fill=T,row.names=NULL)
 # extract snps which freq = 0 in ancient population
-anc=ARD[ARD[,8]==0,5]
-res=NOR[ARD[,8]==0,]
-out=cbind(res,anc)
-out2=na.omit(out)
-write.table(out2,"keep",row.names=F,quote=F,sep="\t")
+anc=norway_c[ard_c[,6]==0,]
+anc2=na.omit(anc)
+write.table(anc2,"keep",row.names=F,quote=F,sep="\t")
 ## end R
 
 ## use first two columns to extract snps, edit file
 awk '{print $1"\t"$2}' keep >keep2
 
-vcftools --vcf  freebayes.SNPs.filtered.final.98.recode.vcf --keep ../pop/norway --positions keep2 --recode --out unique
+vcftools --vcf  freebayes.SNPs.filtered.vcf --keep ../pop/norway --positions keep2 --recode --out unique
 scp unique.recode.vcf dadi/
 
 # construct consesnus fasta sequence
