@@ -89,7 +89,75 @@ S.to_file('SOUTH_spectrum_from_dadi.v6.fs')
 W.to_file('WEST_spectrum_from_dadi.v6.fs')
 
 
+##### example of 1 single run, bottleneck South
+#  nuB: Ratio of bottleneck population size to ancient pop size
+#  nuF: Ratio of contemporary to ancient pop size
+#  TB: Length of bottleneck (in units of 2*Na generations) 
+#  TF: Time since bottleneck recovery (in units of 2*Na generations) 
+
+ns=S.sample_sizes
+params=[0.1,1,1,3]
+func = dadi.Demographics1D.three_epoch
+func_ex = dadi.Numerics.make_extrap_func(func)
+upper_bound = [1,10,10,10]
+lower_bound = [0.01,0.01,0.01,0.01] 
+p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
+popt = dadi.Inference.optimize(p0,S, func_ex, pts_l, lower_bound=lower_bound,upper_bound=upper_bound,verbose=len(p0),maxiter=20)
+
+model = func_ex(params, ns, pts_l)
+theta = dadi.Inference.optimal_sfs_scaling(model, S)
+Ne=theta/(4*10e-8*550000000)
+TB=Ne*2*Ne*popt[2]
+TF=Ne*2*Ne*popt[3]
+
+print 'Optimized parameters', repr(popt)
+print 'Effective ancient population size', Ne
+print 'Time since recovery', TB
+print 'Length of bottleneck', TF
+
+dadi.Plotting.plot_1d_comp_multinom(model,S)
+pylab.savefig('Skagerak_growth.1D.png', dpi=100)
+plt.close("all")
 
 
+#### costum model
+def bottleneck_split_bottleneck((nuAb, nu1B, nu1F, nu2B, nu2F, TAb, Ts, T1b, T2b), (n1,n2), pts):
+    """
+    Model with bottleneck in the ancestral population, then split
+    
+    nuAb: The ancestral population size after bottleneck. (Its initial size is defined to be 1.)
+    nu1B: Size of pop1 after split
+    nu1F: The final size for pop1 (after the bottleneck in pop1)
+    nu2B: Size of pop2 after split
+    nu2F: The final size for pop2 (after the bottleneck in pop2)
+    TAb: Time of the ancestral population bottleneck. 
+    Ts: Time of the split
+    T1b: Time of bottleneck in pop1
+    T2b: Time of bottleneck in pop2
 
+    n1,n2: Size of fs to generate.
+    pts: Number of points to use in grid for evaluation.
+    """
+    # Define the grid we'll use
+    xx = yy = dadi.Numerics.default_grid(pts)
+
+    # phi for the equilibrium ancestral population
+    phi = dadi.PhiManip.phi_1D(xx)
+
+    # Now do the population botleneck event.
+    phi = dadi.Integration.one_pop(phi, xx, TAb, nuAb)
+
+    #do the the split.
+    phi = dadi.PhiManip.phi_1D_to_2D(xx, phi)
+    phi = dadi.PhiManip.phi_1D_to_2D(xx, phi, Ts, nu1=nu1B, nu2=nu2B)
+
+    # the bottleneck in pop1.
+    phi = dadi.Integration.two_pops(phi, xx, T1b, nu1=nu1F, nu2=nu2B)
+
+    # the bottleneck in pop2.
+    phi = dadi.Integration.two_pops(phi, xx, T2b, nu1=nu1F, nu2=nu2F)
+
+    # Finally, calculate the spectrum.
+    fs = dadi.Spectrum.from_phi(phi, (n1,n2), (xx,yy))
+    return fs
 
