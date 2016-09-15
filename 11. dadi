@@ -13,15 +13,18 @@ ard_c=read.table("ARD.frq.count",sep="\t",header=T,fill=T,row.names=NULL)
 norway_f=read.table("norway.frq",sep="\t",header=T,fill=T,row.names=NULL)
 norway_c=read.table("norway.frq.count",sep="\t",header=T,fill=T,row.names=NULL)
 # extract snps which freq = 0 in ancient population
-anc=norway_c[ard_c[,6]==0,]
-anc2=na.omit(anc)
-write.table(anc2,"keep",row.names=F,quote=F,sep="\t")
+anc_tmp=norway_c[ard_c[,6]==0,]
+
+tmp1=na.omit(anc_tmp)
+
+
+write.table(tmp1,"keep",row.names=F,quote=F,sep="\t")
 ## end R
 
 ## use first two columns to extract snps, edit file
 awk '{print $1"\t"$2}' keep >keep2
 
-vcftools --vcf  freebayes.SNPs.filtered.vcf --keep ../pop/norway --positions keep2 --recode --out unique
+vcftools --vcf  freebayes.SNPs.filtered.vcf --keep ../pop/all --positions keep2 --recode --out unique
 scp unique.recode.vcf dadi/
 
 # construct consesnus fasta sequence
@@ -35,7 +38,7 @@ cat ~/data/symphodus_melops.fasta | vcf-consensus ARD_only.recode.vcf.gz -s ARD1
 cd ~data/bam_fixrg_dedup/freebayes/dadi
 
 # 2D analysis
-perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf list2
+perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf list5
 
 #1D analysis
 perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf northsea
