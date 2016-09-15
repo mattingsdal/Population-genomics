@@ -3,51 +3,47 @@
 # use for instance vcftools count/ freq for this compare counts and keep snps that are monomorphic in ancient population
 # usecontruct consensus sequence using ancient pop
 
-vcftools --vcf  freebayes.SNPs.filtered.vcf --keep ../pop/norway --counts2 --out norway
-vcftools --vcf  freebayes.SNPs.filtered.vcf --keep ../pop/ARD --counts2 --out ARD 
+vcftools --vcf  freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/norway --counts2 --out norway
+vcftools --vcf  freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/ARD --counts2 --out ARD 
 
 ## start R
 R
-ard_f=read.table("ARD.frq",sep="\t",header=T,fill=T,row.names=NULL)
 ard_c=read.table("ARD.frq.count",sep="\t",header=T,fill=T,row.names=NULL)
-norway_f=read.table("norway.frq",sep="\t",header=T,fill=T,row.names=NULL)
 norway_c=read.table("norway.frq.count",sep="\t",header=T,fill=T,row.names=NULL)
+
 # extract snps which freq = 0 in ancient population
 anc_tmp=norway_c[ard_c[,6]==0,]
 
 tmp1=na.omit(anc_tmp)
+tmp2=tmp1[tmp1[,6]>0,]
 
-
-write.table(tmp1,"keep",row.names=F,quote=F,sep="\t")
+write.table(tmp2,"keep",row.names=F,quote=F,sep="\t")
 ## end R
 
 ## use first two columns to extract snps, edit file
 awk '{print $1"\t"$2}' keep >keep2
 
-vcftools --vcf  freebayes.SNPs.filtered.vcf --keep ../pop/all --positions keep2 --recode --out unique
-scp unique.recode.vcf dadi/
+vcftools --vcf  freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/all --positions keep2 --recode --out unique
 
 # construct consesnus fasta sequence
-cat ~/data/symphodus_melops.fasta | vcf-consensus ARD_only.recode.vcf.gz -s ARD15 > ARD.consensus.fasta
+#cat ~/data/symphodus_melops.fasta | vcf-consensus ARD_only.recode.vcf.gz -s ARD15 > ARD.consensus.fasta
 
 #  use script to convert vcf to dadi SFS
 #  https://groups.google.com/group/dadi-user/attach/15ae6994986666dc/convert_vcf_to_dadi_input.pl?part=0.1&authuser=0&view=1
 #
 # requires a vcffile, genomefastafile and a list file decribing the samples, 2 columns
 
+scp unique.recode.vcf dadi/
 cd ~data/bam_fixrg_dedup/freebayes/dadi
 
-# 2D analysis
+# convert to input for IBS estimation
+
+# 2D analysis to dadi
 perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf list5
-
-#1D analysis
-perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf northsea
-perl convert_vcf_2_dadi.pl ../ARD.consensus.fasta unique.recode.vcf skagerak
-
 
 
 # Start dadi
-python
+
 import numpy 
 import dadi
 import pylab
@@ -57,361 +53,43 @@ import pylab
 ################ 2D
 # load  data
 print 'Reading data'
-dd = dadi.Misc.make_data_dict('list2.data')
-data = dadi.Spectrum.from_data_dict(dd, ['Skagerak','Northsea'], [33,24], polarized=True)
+dd = dadi.Misc.make_data_dict('all.data')
+all = dadi.Spectrum.from_data_dict(dd, ['South','West','Atlantic'], [66,48,16], polarized=True)
 # end loading data
 ################
 
 ################ 1D
-N = data.marginalize([1)]
-N = dadi.Spectrum.from_data_dict(dd, ['Northsea'], [24], polarized=True)
-S = dadi.Spectrum.from_data_dict(dd, ['Skagerak'], [33], polarized=True)
+S = all.marginalize([1,2])
+W = all.marginalize([0,2])
+
+################ 2D
+data = all.marginalize([2])
+
 
 ################
 ### Calculate descriptive statistics
-pts_l = [40,50,60]
 ns = data.sample_sizes
-print 'DADI analysis ================================================'
-print 'Raw data: file list2.fs'
-print 'samples sizes:', ns
-print 
 S = data.S()
 print "Segregating sites:",S
 Fst = data.Fst()
 print "FST:",Fst
-print "Marginalized Spectrum populations aka combining Skagerak + Northsea"
-margdata = data.marginalize([1])
-theta_w =  margdata.Watterson_theta()
-print "Watterson's theta:", theta_w
 # end calculate descriptive statistics
 ################
 
+data40=data.project([40,40])
 
+pylab.figure()
+dadi.Plotting.plot_single_2d_sfs(data40,vmin=1, vmax=100000)
+pylab.savefig('Norway.png', dpi=100)
+pylab.close()
 
+# export data for scripts
+data40.to_file('ALL_spectrum_from_dadi.v6.fs')
+S.to_file('SOUTH_spectrum_from_dadi.v6.fs')
+W.to_file('WEST_spectrum_from_dadi.v6.fs')
 
-pylab.figure(1)
-dadi.Plotting.plot_single_2d_sfs(data, vmin=1, vmax=20000) 
-##########################
-first explore 1D models
 
-############################################################ 1D model, growth ###################################################
-# growth(params, ns, pts)
 
-nu=5
-T=100
 
-params = (nu,T)
-func = dadi.Demographics1D.growth
-func_ex = dadi.Numerics.make_extrap_log_func(func)
 
-upper_bound = [10,1000]
-lower_bound = [0.001,100] 
-pts_l = [20,30,40]
-p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
 
-
-#### optimization
-print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize_log(p0, N, func_ex, pts_l, 
-                                   lower_bound=lower_bound,
-                                   upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=5)
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-print('Finshed optimization **************************************************')
-# end optimization 
-#############################
-ns=[33]
-model = func_ex(popt, ns, pts_l)
-# Likelihood of the data given the model AFS.
-ll_model = dadi.Inference.ll_multinom(model, S)
-pylab.figure(1)
-dadi.Plotting.plot_1d_comp_multinom(model, S)
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-
-############################################################ 1D model, growth ###################################################
-# growth(params, ns, pts)
-
-nuB=5
-nuF=5
-T=100
-
-params = (nuB,nuF,T)
-func = dadi.Demographics1D.bottlegrowth
-func_ex = dadi.Numerics.make_extrap_log_func(func)
-
-upper_bound = [10,30,1000]
-lower_bound = [0.01,10,0.1] 
-pts_l = [40,50,60]
-p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
-
-#### optimization
-print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize_log(p0, S, func_ex, pts_l, 
-                                   lower_bound=lower_bound,
-                                   upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=20)
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-print('Finshed optimization **************************************************')
-# end optimization 
-#############################
-ns=[33]
-model = func_ex(popt, ns, pts_l)
-# Likelihood of the data given the model AFS.
-ll_model = dadi.Inference.ll_multinom(model, data)
-pylab.figure(1)
-dadi.Plotting.plot_1d_comp_multinom(model, S)
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-
-
-
-
-
-
-# we will use all models provided in dady "Demographics2D.py"
-# 1. snm =  Standard neutral model, populations never diverge.
-# 2. bottlegrowth = Instantanous size change followed by exponential growth with no population split.
-# 3. bottlegrowth_split = Instantanous size change followed by exponential growth then split.
-# 4. bottlegrowth_split_mig = Instantanous size change followed by exponential growth then split with migration.
-# 5. split_mig = Split into two populations of specifed size, with migration.
-# 6. IM =  Isolation-with-migration model with exponential pop growth.
-# 7. IM_pre = Isolation-with-migration model with exponential pop growth and a size change prior to split.
-
-
-# nub: The bottleneck size for both pops
-# nue: The recovery size for both pops
-# m1: The scaled migration rate
-# m2: The scaled migration rate
-# T1: The scaled time of the bottleneck.
-# T2: The scaled time of the recovery
-# T3: The scaled time of the admixture
-# n1,n2: Size of fs to generate.
-# pts: Number of points to use in grid for evaluation
-
-############################################################ Standard neutral model ###################################################
-
-# define 2D netural model
-func = dadi.Demographics2D.snm
-func_ex = dadi.Numerics.make_extrap_func(func)
-params=[ ]
-p0 = dadi.Misc.perturb_params(params)
-##########################
-#### optimization
-print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize(p0, data, func_ex, pts_l, 
-                                   lower_bound=lower_bound,
-                                   upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=1000)
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-print('Finshed optimization **************************************************')
-# end optimization 
-#############################
-
-##########################
-#### print results and make plot
-print('Best-fit parameters: {0}'.format(popt))
-# Calculate the best-fit model AFS.
-model = func_ex(popt, ns, pts_l)
-# Likelihood of the data given the model AFS.
-ll_model = dadi.Inference.ll_multinom(model, data)
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-# Plot a comparison of the resulting fs with the data.
-import pylab
-pylab.figure(1)
-dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=3,pop_ids =('Skagerak','Northsea'))
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-pylab.savefig('Skagerak_Northsea.2Dsnm.png', dpi=300)
-# end print results and make plot
-#############################
-
-
-############################################################ BOTTLEGROWTH ########################################################
-# Params are nuB,nuF,TF; 
-# nuB: Ratio of bottleneck population size to ancient pop size, 
-# nuF: Ratio of contemporary to ancient pop size,
-# TF: Time since bottleneck recovery
-
-
-
-params = [1,1,1]
-
-func = dadi.Demographics2D.bottlegrowth
-func_ex = dadi.Numerics.make_extrap_log_func(func)
-
-upper_bound = [10,10,20]
-lower_bound = [0.001,0.001,0.001] 
-
-p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
-
-##########################
-#### optimization
-print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
-                                   lower_bound=lower_bound,
-                                   upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=20)
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-print('Finshed optimization **************************************************')
-# end optimization 
-#############################
-
-##########################
-#### print results and make plot
-print('Best-fit parameters: {0}'.format(popt))
-# Calculate the best-fit model AFS.
-ns=[33,24]
-model = func_ex(popt, ns, pts_l)
-# Likelihood of the data given the model AFS.
-ll_model = dadi.Inference.ll_multinom(model, data)
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-# Plot a comparison of the resulting fs with the data.
-pylab.figure(1)
-dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=3,pop_ids =('Skagerak','Northsea'))
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-pylab.savefig('Skagerak_Northsea.2D.bottlegrowth.png', dpi=300)
-# end print results and make plot
-#############################
-
-
-############################################################ BOTTLEGROWTH SPLIT #####################################################
-# Params are nuB,nuF,TF; 
-# nuB: Ratio of bottleneck population size to ancient pop size, 
-# nuF: Ratio of contemporary to ancient pop size,
-# TF: Time since bottleneck recovery
-# Ts = Time in the past at which the two populations split
-
-params = (nuB,nuF,T,Ts)
-
-nuB=7
-nuF=10
-T=5000
-Ts=10
-
-params = (nuB,nuF,T,Ts)
-
-
-func = dadi.Demographics2D.bottlegrowth_split
-func_ex = dadi.Numerics.make_extrap_log_func(func)
-
-upper_bound = [10,10,20,20]
-lower_bound = [0.01,0.01,0.01,0.01] 
-
-p0 = dadi.Misc.perturb_params(params, fold=2 lower_bound = lower_bound, upper_bound = upper_bound)
-
-##########################
-#### optimization
-print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
-                                   lower_bound=lower_bound,
-                                   upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=10)
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-print('Finshed optimization **************************************************')
-# end optimization 
-#############################
-# dadi.Inference.optimize
-##########################
-#### print results and make plot
-print('Best-fit parameters: {0}'.format(popt))
-# Calculate the best-fit model AFS.
-model = func_ex(popt, ns, pts_l)
-# Likelihood of the data given the model AFS.
-ll_model = dadi.Inference.ll_multinom(model, data)
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-# Plot a comparison of the resulting fs with the data.
-pylab.figure(1)
-dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=3,pop_ids =('Skagerak','Northsea'))
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-pylab.savefig('Skagerak_Northsea.2D.bottlegrowth.png', dpi=300)
-# end print results and make plot
-#############################
-
-
-
-############################################################ IM_pre ########################################################
-# Isolation-with-migration model with exponential pop growth and a size change prior to split.
-# params = (nuPre,TPre,s,nu1,nu2,T,m12,m21)
-
-nuPre=5
-TPre = 10
-s = 0.01
-nu1 = 5
-nu2 = 5
-T= 1000
-m12=0
-m21=0
-
-
-params = (nuPre,TPre,s,nu1,nu2,T,m12,m21)
-
-func = dadi.Demographics2D.IM_pre
-func_ex = dadi.Numerics.make_extrap_log_func(func)
-
-upper_bound = [100,100,100,100,100,100,100,100]
-lower_bound = [0.01,0.01, 0.001,0.01,0.01,0.01,0.01,0.01] 
-
-p0 = dadi.Misc.perturb_params(params, fold=1, lower_bound = lower_bound, upper_bound = upper_bound)
-
-##########################
-#### optimization
-print('Beginning optimization ************************************************')
-popt = dadi.Inference.optimize_log(p0, data, func_ex, pts_l, 
-                                   lower_bound=lower_bound,
-                                   upper_bound=upper_bound,
-                                   verbose=len(p0),maxiter=10)
-# The verbose argument controls how often progress of the optimizer should be
-# printed. It's useful to keep track of optimization process.
-print('Finshed optimization **************************************************')
-# end optimization 
-#############################
-
-##########################
-#### print results and make plot
-print('Best-fit parameters: {0}'.format(popt))
-# Calculate the best-fit model AFS.
-model = func_ex(popt, ns, pts_l)
-# Likelihood of the data given the model AFS.
-ll_model = dadi.Inference.ll_multinom(model, data)
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-# Plot a comparison of the resulting fs with the data.
-pylab.figure(1)
-dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=3,pop_ids =('Skagerak','Northsea'))
-print('Maximum log composite likelihood: {0}'.format(ll_model))
-pylab.savefig('Skagerak_Northsea.2D.bottlegrowth.png', dpi=300)
-# end print results and make plot
-#############################
-
-
-
-
-
-
-
-
-
-# Note on units
-# mij = migration rate
-# Ne = effective population
-# mu = mutaiton rate
-# K = numer of segregating sites
-# L = numer of SNPs
-# g = generation time
-
-# For example, I have got θ, nu, mij and T.
-# In dadi manual, Nref is calculated with θ/4u. While, in some papers with SNP data, θ/4uL is used to get Nref,
-# where L is number of analyzed sites. Which equation is OK? = theta = 4*mu*L*Nref 
-# Additionally, if I got Nref=1000, nu=0.5, mij=0.2 , T=2 and generation time g=2 :
-# Real time = 2*Nref*T*g = 2*1000*2*2 = 8000 years
-# Real population size = nu*Nref = 0.5*1000 = 500 individuals
-# Real migration rates = mij/2Nref = 0.2/(2*1000)  = 1e-4     
-# which means 0.05 individuals each generation are migrating from population j to population i.
