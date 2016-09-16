@@ -42,11 +42,10 @@ python plot_onepop.py S_lengths.ibs demographic_history.txt demo.pdf
 
 
 
-# plotting code for R
 # Copy and paste inferred history to file called input.txt
 data=read.table("input.txt",sep=":",row.names=1,fill=T)
 my=as.matrix(str_split_fixed(data$V2, ", ", 7))
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 200000), ylim=c(0, 50))
+plot(1, type="n", xlab="", ylab="", xlim=c(50000, 150000), ylim=c(0, 50))
 k=100000
 
 rect(k-(as.numeric(my[1,1])/2), 0, k+(as.numeric(my[1,1])/2), as.numeric(my[2,1]),density=20,col="gray",border="black")
@@ -57,6 +56,8 @@ rect(k-(as.numeric(my[1,5])/2), as.numeric(my[2,4]), k+(as.numeric(my[1,5])/2), 
 rect(k-(as.numeric(my[1,6])/2), as.numeric(my[2,5]), k+(as.numeric(my[1,6])/2), as.numeric(my[2,6]),density=20,col="gray",border="black")
 rect(k-(as.numeric(my[1,7])/2), as.numeric(my[2,6]), k+(as.numeric(my[1,7])/2), as.numeric(my[2,7]),density=20,col="gray",border="black")
 
+minor.tick(ny=5)
+grid(ny=27)
 
 
 
