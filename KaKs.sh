@@ -34,4 +34,25 @@ for (j in 1:length(file.names)) {
 
 write.table(result,"KaKs_result.txt",sep="\t")
 
+
+
+######################
+######################
+# KaKs calculation using scripts from bigBoy
+#https://github.com/Bioboy2014/Scripts/tree/35dd405582042ffd1349696aa82a6298ea59aa56/FFgenome/03.evolution/kaks_pairwise/bin/script_KaKs_calculator 
+
+for G in *trimal
+	do
+		perl KaKs.pl --kaks_calculator ~/software/KaKs_Calculator2.0/bin/Linux/KaKs_Calculator $G --outdir out
+	done
+	
+	cd out
+	
+	for G in *axt
+		do
+		perl calculate_cds_aa_identity.pl $G > ${G}.identity
+		perl sumKaKs.pl ${G}.kaks {G}.identity > ${G}_done	
+	done
+
+
 	
