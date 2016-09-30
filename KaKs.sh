@@ -46,13 +46,13 @@ for G in *trimal
 		perl KaKs.pl --kaks_calculator ~/software/KaKs_Calculator2.0/bin/Linux/KaKs_Calculator $G --outdir out
 	done
 	
-	cd out
+cd out
 	
-	for G in *axt
-		do
-		perl calculate_cds_aa_identity.pl $G > ${G}.identity
-		perl sumKaKs.pl ${G}.kaks {G}.identity > ${G}_done	
-	done
+for G in *axt
+	do
+	perl calculate_cds_aa_identity.pl ${G} > ${G}.identity
+	perl sumKaKs.pl ${G}.kaks {G}.identity > ${G}_done	
+done
 
 
 	
