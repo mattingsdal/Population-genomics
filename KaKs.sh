@@ -54,5 +54,6 @@ for G in *axt
 	perl sumKaKs.pl ${G}.kaks {G}.identity > ${G}_done	
 done
 
+cat *done > result
 
 	
