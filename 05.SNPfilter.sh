@@ -4,7 +4,7 @@
 ### second apply quality filter
 
 
-vcftools --vcf freebayes.vcf --remove-indels --recode --recode-INFO-all --out freebayes.SNPs
+vcftools --vcf freebayes-parallel.vcf --remove-indels --min-alleles 2 --max-alleles 2 --recode --recode-INFO-all --out freebayes.SNPs
 
 # SAF % SAR = remove alleles only seen in one strand
 # AB = allelic balance
