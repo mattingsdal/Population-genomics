@@ -20,7 +20,7 @@ vcftools --vcf freebayes.SNPs.filtered.vcf --minDP 4 --maxDP 20 --max-missing 1 
 
 #####################################################
 ##### generate random names for the SNPs
-vcf=freebayes.SNPs.filtered.final.recode.vcf
+vcf=freebayes.SNPs.filtered.final.4
 
 n=$(grep -c "scf" $vcf)
 
