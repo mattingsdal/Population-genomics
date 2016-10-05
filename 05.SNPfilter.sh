@@ -12,7 +12,7 @@ vcftools --vcf freebayes-parallel.vcf --remove-indels --min-alleles 2 --max-alle
 
 # vcffilter -f "SAF > 0 & SAR >0 & AB > 0.25 & AB < 0.75 & QUAL / DP > 0.25 & RPR > 1 & RPL > 1" freebayes.SNPs.recode.vcf >freebayes.SNPs.filtered.vcf
 
-vcffilter -f "QUAL > 1 & QUAL / AO > 10 & SAF > 0 & SAR > 0 & RPR > 1 & RPL > 1" freebayes.SNPs.recode.vcf >freebayes.SNPs.filtered.vcf
+vcffilter -f "QUAL > 50 & QUAL / AO > 10 & SAF > 0 & SAR > 0 & RPR > 1 & RPL > 1" freebayes.SNPs.recode.vcf >freebayes.SNPs.filtered.vcf
 
 ### minDP x 1/3 of averadge depth = 
 ### maxDP x2 averadge depth       =
