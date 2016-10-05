@@ -16,7 +16,7 @@ vcffilter -f "QUAL > 50 & QUAL / AO > 10 & SAF > 0 & SAR > 0 & RPR > 1 & RPL > 1
 
 ### minDP x 1/3 of averadge depth = 
 ### maxDP x2 averadge depth       =
-vcftools --vcf freebayes.SNPs.filtered.vcf --minDP 3 --maxDP 20 --max-missing 1 --recode --out freebayes.SNPs.filtered.final
+vcftools --vcf freebayes.SNPs.filtered.vcf --minDP 4 --maxDP 20 --max-missing 1 --recode --out freebayes.SNPs.filtered.final
 
 #####################################################
 ##### generate random names for the SNPs
