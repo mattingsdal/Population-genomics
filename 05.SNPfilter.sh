@@ -20,12 +20,13 @@ vcftools --vcf freebayes.SNPs.filtered.vcf --minDP 4 --maxDP 20 --max-missing 1 
 
 #####################################################
 ##### generate random names for the SNPs
-vcf=freebayes.SNPs.filtered.final.4
+vcf=freebayes.SNPs.filtered.final.4.recode.vcf
 
-n=$(grep -c "scf" $vcf)
+grep -v "#" freebayes.SNPs.filtered.final.4.recode.vcf | wc -l
+n=1331084
 
 pwgen -1nc 15 $n >random_names
-plink --vcf $vcf --allow-extra-chr --make-bed
+plink --vcf $vcf --allow-extra-chr --make-bed 
 paste plink.bim random_names >tmp
 awk '{print $1"\t"$7"\t"$3"\t"$4"\t"$5"\t"$6}' tmp >plink2.bim
 plink --bed plink.bed --bim plink2.bim --fam plink.fam --make-bed --allow-extra-chr 
