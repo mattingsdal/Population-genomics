@@ -10,6 +10,8 @@ vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/ST --freq2
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/NH --freq2 --out popgen/NH
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/SM --freq2 --out popgen/SM 
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/ARD --freq2 --out popgen/ARD 
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/GF --freq2 --out popgen/GF 
+
 
 ### TAJIMA'S D
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/AR --TajimaD 10000 --out popgen/AR 
@@ -28,6 +30,8 @@ vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/ST --het -
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/NH --het --out popgen/NH
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/SM --het --out popgen/SM 
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/ARD --het --out popgen/ARD
+vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/GF --het --out popgen/GF
+
 
 # HARDY-WINEBERG
 vcftools --vcf freebayes.SNPs.filtered.final.recode.vcf --keep ../pop/AR --hardy --out popgen/AR 
