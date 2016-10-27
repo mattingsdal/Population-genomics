@@ -46,7 +46,11 @@ gzip plink_maf0.005.vcf
 java -jar beagle gt=plink_maf0.005.vcf.gz impute=TRUE out=plink_maf0.005_imputed
 gunzip plink_maf0.005_imputed.vcf.gz
 
-
+for D in *gz
+ do
+ java -jar ~/software/beagle/beagle.27Jul16.86a.jar gt=${D} impute=TRUE out=${D}_imputed 
+ done
+ 
 
 # run beagle
 
