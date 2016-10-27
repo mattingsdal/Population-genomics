@@ -50,6 +50,18 @@ for D in *gz
  do
  java -jar ~/software/beagle/beagle.27Jul16.86a.jar gt=${D} impute=TRUE out=${D}_imputed 
  done
+
+# convert vcf file to bed files
+plink --vcf plink_maf0.005_ard.vcf.gz_imputed.vcf --make-bed --out plink_ard_imputed --allow-extra-chr
+plink --vcf plink_maf0.005_south.vcf.gz_imputed.vcf --make-bed --out plink_south_imputed --allow-extra-chr
+plink --vcf plink_maf0.005_west.vcf.gz_imputed.vcf --make-bed --out plink_west_imputed --allow-extra-chr
+
+# export frequencies and F-statistic
+plink --bfile plink_ard_imputed --freq --out plink_ard_imputed --allow-extra-chr
+plink --bfile plink_south_imputed --freq --out plink_south_imputed --allow-extra-chr
+plink --bfile plink_west_imputed --freq --out plink_west_imputed --allow-extra-chr
+
+
  
 
 # run beagle
