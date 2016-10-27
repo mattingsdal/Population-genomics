@@ -34,16 +34,12 @@ plink --bed plink.bed --bim plink2.bim --fam plink.fam --make-bed --allow-extra-
 # remove rare alleles
 plink --bfile plink --maf 0.05 --allow-extra-chr --make-bed --out plink_maf0.005
 
-# prepare for imputaiton using linkimpute
-plink --bfile plink_maf0.005 --recodeA --allow-extra-chr --out plink_maf0.005
-
 # prepare for imputaiton using beagle
 plink --bfile plink --recode-vcf --allow-extra-chr --out plink_maf0.005
 gzip plink_maf0.005.vcf
-
-# run linkimpute
-java -jar ~/software/linkimpute/LinkImpute.jar plink.raw south_linkimpute.raw
-
+java -jar beagle gt=plink_maf0.005.vcf.gz impute=TRUE out=plink_maf0.005_imputed
+gunzip plink_maf0.005_imputed.vcf.gz
+# run beagle
 
 #### VCF file with SNP names is now  "plink.bed" files
 ######################################################
