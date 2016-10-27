@@ -35,10 +35,19 @@ plink --bed plink.bed --bim plink2.bim --fam plink.fam --make-bed --allow-extra-
 plink --bfile plink --maf 0.05 --allow-extra-chr --make-bed --out plink_maf0.005
 
 # prepare for imputaiton using beagle
-plink --bfile plink --recode-vcf --allow-extra-chr --out plink_maf0.005
+plink --bfile plink --keep ../pop/south2plink --recode-vcf --allow-extra-chr --out plink_maf0.005_south
+plink --bfile plink --keep ../pop/west2plink --recode-vcf --allow-extra-chr --out plink_maf0.005_west
+plink --bfile plink --keep ../pop/ard2plink --recode-vcf --allow-extra-chr --out plink_maf0.005_ard
+mv plink_maf0.005*vcf beagle
+cd beagle
+gzip *vcf
+
 gzip plink_maf0.005.vcf
 java -jar beagle gt=plink_maf0.005.vcf.gz impute=TRUE out=plink_maf0.005_imputed
 gunzip plink_maf0.005_imputed.vcf.gz
+
+
+
 # run beagle
 
 #### VCF file with SNP names is now  "plink.bed" files
