@@ -31,13 +31,16 @@ paste plink.bim random_names >tmp
 awk '{print $1"\t"$7"\t"$3"\t"$4"\t"$5"\t"$6}' tmp >plink2.bim
 plink --bed plink.bed --bim plink2.bim --fam plink.fam --make-bed --allow-extra-chr 
 
-## impute before MAF cutoff. Recode to BEAGLE.
-plink --bfile plink --keep ../pop/south2plink --out south --recode-beagle --allow-extra-chr
-plink --bfile plink --keep ../pop/west2plink --out west --recode-beagle --allow-extra-chr
-plink --bfile plink --keep ../pop/ard2plink --out ard --recode-beagle --allow-extra-chr
+# prepare for imputaiton
+plink --bfile plink --keep ../pop/south2plink --out south --recodeA --allow-extra-chr
+plink --bfile plink --keep ../pop/west2plink --out west --recodeA --allow-extra-chr
+plink --bfile plink --keep ../pop/ard2plink --out ard --recodeA --allow-extra-chr
 
-# run imputation using beagle using default parameters.
-plink --bfile plink --maf 0.05 --geno 0.05 --make-bed --out plink_final
+# run linkimpute
+java -jar ~/software/linkimpute/LinkImpute.jar south.raw south_linkimpute.raw
+java -jar ~/software/linkimpute/LinkImpute.jar west.raw west_linkimpute.raw
+java -jar ~/software/linkimpute/LinkImpute.jar ard.raw ard_linkimpute.raw
+
 #### VCF file with SNP names is now  "plink.bed" files
 ######################################################
 
