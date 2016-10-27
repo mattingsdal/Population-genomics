@@ -61,10 +61,14 @@ plink --bfile plink_ard_imputed --freq --out plink_ard_imputed --allow-extra-chr
 plink --bfile plink_south_imputed --freq --out plink_south_imputed --allow-extra-chr
 plink --bfile plink_west_imputed --freq --out plink_west_imputed --allow-extra-chr
 
+# merge files to 1 sine dataset
+plink --bfile plink_south_imputed --bmerge plink_west_imputed.bed plink_west_imputed.bim plink_west_imputed.fam --make-bed --out test --allow-extra-chr
+plink --bfile test --bmerge plink_ard_imputed.bed plink_ard_imputed.bim plink_ard_imputed.fam --make-bed --out plink_beagle_imputed --allow-extra-chr
 
- 
+# now remove SNPs with MAF < 5%
+plink --bfile plink_beagle_imputed --maf 0.05 --make-bed --out plink_beagle_imputed_maf5 --allow-extra-chr
 
-# run beagle
+# remove LD
 
 #### VCF file with SNP names is now  "plink.bed" files
 ######################################################
