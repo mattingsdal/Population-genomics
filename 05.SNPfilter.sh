@@ -69,6 +69,16 @@ plink --bfile test --bmerge plink_ard_imputed.bed plink_ard_imputed.bim plink_ar
 plink --bfile plink_beagle_imputed --maf 0.05 --make-bed --out plink_beagle_imputed_maf5 --allow-extra-chr
 
 # remove LD
+plink --bfile plink_south_imputed --allow-extra-chr --maf 0.05 --make-bed --out plink_south_imputed_maf
+plink --bfile plink_south_imputed_maf --allow-extra-chr --indep-pairwise 20kb 20 0.5 --out south_LD
+
+plink --bfile plink_west_imputed --allow-extra-chr --maf 0.05  --make-bed --out plink_west_imputed_maf
+plink --bfile plink_west_imputed_maf --allow-extra-chr --indep-pairwise 20kb 20 0.5 --out west_LD
+
+plink --bfile plink_ard_imputed --allow-extra-chr --maf 0.07 --make-bed --out plink_ard_imputed_maf
+plink --bfile plink_ard_imputed_maf --allow-extra-chr --indep-pairwise 20kb 20 0.5 --out ard_LD
+
+
 
 #### VCF file with SNP names is now  "plink.bed" files
 ######################################################
