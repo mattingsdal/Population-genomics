@@ -62,18 +62,11 @@ plink --bfile plink_south_imputed --freq --out plink_south_imputed --allow-extra
 plink --bfile plink_west_imputed --freq --out plink_west_imputed --allow-extra-chr
 
 # merge files to 1 sine dataset
-plink --bfile plink_south_imputed --bmerge plink_west_imputed.bed plink_west_imputed.bim plink_west_imputed.fam --allow-extra-chr --make-bed --out test --allow-extra-chr 
+plink --bfile plink_south_imputed --bmerge plink_west_imputed.bed plink_west_imputed.bim plink_west_imputed.fam --allow-extra-chr --make-bed --out test 
 plink --bfile test --bmerge plink_ard_imputed.bed plink_ard_imputed.bim plink_ard_imputed.fam --make-bed --out plink_beagle_imputed --allow-extra-chr
 
-# remove rare SNPs
-plink --bfile plink_south_imputed --allow-extra-chr --maf 0.05 --make-bed --out plink_south_imputed_maf
-plink --bfile plink_west_imputed --allow-extra-chr --maf 0.05  --make-bed --out plink_west_imputed_maf
-plink --bfile plink_ard_imputed --allow-extra-chr --maf 0.07 --make-bed --out plink_ard_imputed_maf
-
-# merge dataset
-plink --bfile plink_south_imputed_maf --bmerge plink_west_imputed.bed plink_west_imputed.bim plink_west_imputed.fam --make-bed --out tmp --allow-extra-chr
-plink --bfile tmp --bmerge plink_ard_imputed_maf.bed plink_ard_imputed_maf.bim plink_ard_imputed_maf.fam --make-bed --out tmp2 --allow-extra-chr
-plink --bfile tmp2 --geno 0 --make-bed --out plink_imputed_maf
+# remove rare alleles
+plink --bfile plink_beagle_imputed --maf 0.05 --make-bed --out plink_imputed_maf --allow-extra-chr
 
 # prune LD
 plink --bfile plink_imputed_maf --allow-extra-chr --indep-pairwise 20kb 20 0.5 --out plink_imputed_maf
@@ -81,7 +74,7 @@ plink --bfile plink_imputed_maf --extract plink_imputed_maf.prune.in --make-bed 
 
 # construct final dataset used for PCA, DAPC etc.
 plink --bfile plink_imputed_maf_noLD --allow-extra-chr --recodeA --out SNP.QC.population
-plink --bfile plink_imputed_maf_noLD --allow-extra-chr --make-bed --out SNP.QC.population
+plink --bfile plink_imputed_maf_noLD --allow-extra-chr --reference-allele ref_allele --make-bed --out SNP.QC.population
 
 
 #### VCF file with SNP names is now  "plink.bed" files
