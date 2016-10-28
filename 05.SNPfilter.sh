@@ -62,21 +62,20 @@ plink --bfile plink_south_imputed --freq --out plink_south_imputed --allow-extra
 plink --bfile plink_west_imputed --freq --out plink_west_imputed --allow-extra-chr
 
 # merge files to 1 sine dataset
-plink --bfile plink_south_imputed --bmerge plink_west_imputed.bed plink_west_imputed.bim plink_west_imputed.fam --make-bed --out test --allow-extra-chr
+plink --bfile plink_south_imputed --bmerge plink_west_imputed.bed plink_west_imputed.bim plink_west_imputed.fam --allow-extra-chr --make-bed --out test --allow-extra-chr 
 plink --bfile test --bmerge plink_ard_imputed.bed plink_ard_imputed.bim plink_ard_imputed.fam --make-bed --out plink_beagle_imputed --allow-extra-chr
 
 # now remove SNPs with MAF < 5%
-plink --bfile plink_beagle_imputed --maf 0.05 --make-bed --out plink_beagle_imputed_maf5 --allow-extra-chr
 
 # remove LD
 plink --bfile plink_south_imputed --allow-extra-chr --maf 0.05 --make-bed --out plink_south_imputed_maf
-plink --bfile plink_south_imputed_maf --allow-extra-chr --indep-pairwise 20kb 20 0.5 --out south_LD
-
 plink --bfile plink_west_imputed --allow-extra-chr --maf 0.05  --make-bed --out plink_west_imputed_maf
-plink --bfile plink_west_imputed_maf --allow-extra-chr --indep-pairwise 20kb 20 0.5 --out west_LD
-
 plink --bfile plink_ard_imputed --allow-extra-chr --maf 0.07 --make-bed --out plink_ard_imputed_maf
-plink --bfile plink_ard_imputed_maf --allow-extra-chr --indep-pairwise 20kb 20 0.5 --out ard_LD
+
+# merge dataset
+plink --bfile plink_south_imputed_maf --bmerge plink_west_imputed.bim plink_west_imputed.bed plink_west_imputed.fam --make-bed --out tmp --allow-extra-chr
+plink --bfile tmp --bmerge plink_ard_imputed_maf.bed plink_ard_imputed_maf.bim plink_ard_imputed_maf.fam --make-bed --out plink_impured_maf
+
 
 
 
