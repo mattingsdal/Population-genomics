@@ -21,3 +21,22 @@ done
 
 ### end BWA
 ############################################################
+
+
+
+
+##############
+## alternative
+#!/bin/sh
+
+file=/usit/abel/u1/mortema/genome/corkwing.contigs.fasta
+
+module load samtools
+
+for R1 in ./*R1*.fastq.gz
+    do
+        echo $R1
+        R2=`echo $R1 | sed 's/_R1_/_R2_/'`
+        bname=`echo $R1 | sed 's/_R1_.\+//'`
+        ~/software/bwa/bwa mem -M -t 20  $file $R1 $R2 | samtools view -@5 -Shb > $bname.sorted.bam
+    done
