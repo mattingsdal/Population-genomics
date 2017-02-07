@@ -1,5 +1,5 @@
 ## prepare input
-~/software/smcpp/bin/smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/tig00000001.smc.gz tig00000001 TV:TV70,TV67,TV66,TV65,TV69,TV74,TV73,TV68 ARD:ARD20,ARD21,ARD23,ARD18,ARD15,ARD8,ARD6
+~/software/smcpp/bin/smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/tig00000001.smc.gz tig00000001 TV:TV70,TV67,TV66,TV65,TV69,TV74,TV73,TV68 ARD:ARD20,ARD21,ARD23,ARD18,ARD15,ARD8,ARD6 SM:NH61,NH63,NH60,NH68,NH64,NH65,NH67,NH69
 
 ## do demographi inference
 ~/software/smcpp/bin/smc++ estimate --fold --t1 1 -o analysis/ out/tig*.smc.gz
