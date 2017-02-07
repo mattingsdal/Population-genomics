@@ -1,4 +1,4 @@
-smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf out/tig00000001.smc.gz tig00000001 TV:TV70,TV67,TV66,TV65,TV69,TV74,TV73,TV68
+~/software/smcpp/bin/smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/tig00000001.smc.gz tig00000001 TV:TV70,TV67,TV66,TV65,TV69,TV74,TV73,TV68
 
 
 
