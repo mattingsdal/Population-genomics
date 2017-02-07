@@ -2,7 +2,7 @@
 ~/software/smcpp/bin/smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/tig00000001.smc.gz tig00000001 TV:TV70,TV67,TV66,TV65,TV69,TV74,TV73,TV68 ARD:ARD20,ARD21,ARD23,ARD18,ARD15,ARD8,ARD6
 
 ## do demographi inference
-~/software/smcpp/bin/smc++ estimate --theta .00025 -o analysis/ out/tig*.smc.gz
+~/software/smcpp/bin/smc++ estimate --fold --theta .00025 -o analysis/ out/tig*.smc.gz
 
 # plot
 ~/software/smcpp/bin/smc++ plot plot.pdf analysis/model.final.json
