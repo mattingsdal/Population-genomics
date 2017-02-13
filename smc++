@@ -17,7 +17,7 @@ for chr in tig00000004 tig00000025 tig00023313 tig00000069 tig00000092 tig000001
 	smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/AR.$chr.smc.gz $chr AR:AR62,AR67,AR65,AR61,AR63,AR68,AR66,AR64
 	smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/GF.$chr.smc.gz $chr GF:GF03,GF38,GF04,GF01,GF02,GF23,GF49,GF05,GF07,GF28
 	smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/ARD.$chr.smc.gz $chr ARD:ARD20,ARD23,ARD8,ARD21,ARD6,ARD18,ARD15
-	smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/NH.$chr.smc.gz $chr NH:NH61,NH60,NH64,NH65,NH67,NH69,NH61,NH68
+	smc++ vcf2smc freebayes.SNPs.filtered.final.recode.vcf.gz out/NH.$chr.smc.gz $chr NH:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68
 done
   
 
