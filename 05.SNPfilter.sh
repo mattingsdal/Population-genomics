@@ -3,6 +3,49 @@
 ### first remove indels
 ### second apply quality filter
 
+### 2017
+# input *vcf
+
+# remove SNPs within 3 bp of indel
+bcftools filter -g3 -O u freebayes-paralell.vcf > freebayes-paralell.bcf
+
+# remove indels and keep biallelic SNPs with overall QUAL > 40 
+bcftools view -O v -m 2 -M 2 --types snps -i 'QUAL>40' freebayes-paralell.bcf >freebayes-paralell.SNPs.vcf
+
+# set genotypes to missing based on depth, and a maximum missing treshold 5%
+vcftools --vcf freebayes-paralell.SNPs.vcf --minDP 4 --maxDP 30 --max-missing 0.95 --recode --out freebayes.SNPs.filtered.final
+
+
+# do the same with samtools mpileup
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 vcftools --vcf freebayes-parallel.vcf --remove-indels --min-alleles 2 --max-alleles 2 --recode --recode-INFO-all --out freebayes.SNPs
 
