@@ -33,9 +33,9 @@ done
 
 for i in {1..10}
 do
-	smc++ estimate -o west$1/ --knots 10 --thinning 400 --fold --t1 10 --tK 100000 --em-iterations 20  out/West*
-	smc++ estimate -o south$1/ --knots 10 --thinning 400 --fold --t1 10 --tK 100000 --em-iterations 20  out/South*
-	smc++ estimate -o ard$1/ --knots 10 --thinning 400 --fold --t1 10 --tK 100000 --em-iterations 20  out/Ardt*
+	smc++ estimate -o west$i/ --knots 10 --thinning 400 --fold --t1 10 --tK 100000 --em-iterations 20  out/West*
+	smc++ estimate -o south$i/ --knots 10 --thinning 400 --fold --t1 10 --tK 100000 --em-iterations 20  out/South*
+	smc++ estimate -o ard$i/ --knots 10 --thinning 400 --fold --t1 10 --tK 100000 --em-iterations 20  out/Ardt*
 
 done
 
