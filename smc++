@@ -27,6 +27,7 @@ for chr in SYMME00023145 SYMME00000053 SYMME00000084 SYMME00000095 SYMME00000109
 do
 	smc++ vcf2smc freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz out/South.$chr.smc.gz $chr South:GF03,GF38,GF04,GF01,GF02,GF23,GF49,GF05,GF07,GF28,AR62,AR67,AR65,AR61,AR63,AR68,AR66,AR64,TV70,TV67,TV66,TV65,TV69,TV74,TV73,TV68
 	smc++ vcf2smc freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz out/West.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
+	smc++ vcf2smc freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz out/Ardt.$chr.smc.gz $chr Ard:ARD18,ARD15,ARD21,ARD6,ARD20,ARD8,ARD23
 done
 
 
