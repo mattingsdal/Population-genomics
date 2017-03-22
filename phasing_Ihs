@@ -1,0 +1,10 @@
+### impute missing data using beagle
+java -jar /cluster/software/VERSIONS/beagle-4.1/beagle.jar gtgl=freebayes.SNPs.filtered.final.recode.intersect.edit.vcf gprobs=true out=beagle.vcf nthreads=10 &
+
+# phase genoetypes
+java -jar /cluster/software/VERSIONS/beagle-4.1/beagle.jar gt=beagle.vcf.vcf.gz gprobs=true out=haplotypes nthreads=10 ibd=true &
+
+# run iHS using vcflib
+# south
+~/software/vcflib/bin/iHS haplotypes.vcf.gz --target 1,2,3,4,8,11,12,13,14,15,18,19,20,21,23,24,27,33,36,38,42,43,44,45,46,47,48,49,52,53,56,59,61,65
+

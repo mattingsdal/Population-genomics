@@ -1,2 +1,0 @@
-nohup java -jar /cluster/software/VERSIONS/beagle-4.1/beagle.jar gtgl=freebayes.SNPs.filtered.final.recode.intersect.edit.vcf out=beagle.vcf nthreads=5 &
-nohup java -jar /cluster/software/VERSIONS/beagle-4.1/beagle.jar gt=beagle.vcf.vcf.gz gprobs=true out=haplotypes nthreads=10 ibd=true &
