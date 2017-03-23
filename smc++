@@ -62,8 +62,8 @@ done
 
 for i in {1..10}
 do
-	smc++ estimate -o west$i/ --knots 20 --thinning 400 --fold --t1 100 --tK 100000 --em-iterations 20  WEST/four/*gz
-	smc++ estimate -o south$i/ --knots 20 --thinning 400 --fold --t1 100 --tK 100000 --em-iterations 20  SOUTH/four/*gz
+	smc++ estimate -o west$i/ 5e-8 --knots 20 --thinning 400 --fold --t1 100 --tK 100000 --em-iterations 20  WEST/four/*gz
+	smc++ estimate -o south$i/ 5e-8 --knots 20 --thinning 400 --fold --t1 100 --tK 100000 --em-iterations 20  SOUTH/four/*gz
 
 done
 
