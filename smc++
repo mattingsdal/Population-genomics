@@ -41,7 +41,7 @@ do
         smc++ vcf2smc -d NH65 NH65 freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz WEST/NH65.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
         smc++ vcf2smc -d NH67 NH67 freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz WEST/NH67.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
         smc++ vcf2smc -d NH69 NH69 freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz WEST/NH69.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
-        smc++ vcf2smc -d NH61 NH63 freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz WEST/NH61.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
+        smc++ vcf2smc -d NH63 NH63 freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz WEST/NH63.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
         smc++ vcf2smc -d NH68 NH68 freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz WEST/NH68.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
         smc++ vcf2smc -d SM112 SM112 freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz WEST/SM112.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
         smc++ vcf2smc -d SM116 SM116 freebayes.SNPs.filtered.final.recode.intersect.edit.vcf.gz WEST/SM116.$chr.smc.gz $chr West:NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
