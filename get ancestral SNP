@@ -1,0 +1,15 @@
+# define your vcf and genome
+vcf=freebayes.SNPs.filtered.final.recode.intersect.edit.vcf
+genome=Symphodus_melops.fasta
+define flank
+
+# remove heqader and create a bed track of snps
+egrep -v "^#" $vcf  | awk '{print $1"\t"$2-21"\t"$2+20}' >mypos
+
+# correct underscore
+sed 's/SYMME/SYMME_/g' mypos>mypos2
+
+# extract flakning sequences for each snp using bedtools
+bedtools getfasta -fi Symphodus_melops.fasta -bed mypos2 -fo my_subsequences
+
+
