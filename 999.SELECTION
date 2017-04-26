@@ -1,0 +1,42 @@
+module load vcftools
+
+# calculate genome-wide stats
+
+########
+# VCFTOOLS
+########
+
+vcftools --vcf freebayes.SNPs.filtered.final.recode.intersect.edit.vcf --keep norway.id --TajimaD 50000 --out 50
+vcftools --vcf freebayes.SNPs.filtered.final.recode.intersect.edit.vcf --weir-fst-pop south.id --weir-fst-pop west.id --fst-window-size 50000 --out 50
+
+########
+# HAPBIN
+########
+
+# produce HAP file 
+vcftools --vcf haplotypes.vcf --IMPUTE --keep scandinavia.id --out hapbin
+
+# produce MAP file
+awk 'BEGIN { FS="-"} {print $1} hapbin.impute.legend >chr
+awk  '{print $1"\t"$2/1000000"\t"$2}' hapbin.impute.legend >snp
+paste chr snp | sed 1d >hapbin.map
+ihsbin --hap hapbin.impute.hap --map hapbin.map -o iHS_score
+
+########
+# make bed tracks in R
+########
+
+Tajima=read.table("50.Tajima.D",sep="\t",header=T)
+Fst=read.table("50.windowed.weir.fst",sep="\t",header=T)
+ihs=read.table("iHS_hapbin_scandinavia2",sep="\t",header=T,row.names=NULL)
+
+IHS=cbind(ihs[,1],ihs[,2],ihs[,2]+1,ihs[,7])
+TAJIMA=cbind(as.character(Tajima[,1]),Tajima[,2],Tajima[,2]+49999,Tajima[,4])
+FST=cbind(as.character(Fst[,1]),Fst[,2],Fst[,2]+49999,Fst[,6])
+
+write.table(FST,"FST.bed.tmp",sep="\t",quote=F,row.names=F)
+write.table(IHS,"IHS.bed.tmp",sep="\t",quote=F,row.names=F)
+write.table(TAJIMA,"TAJIMA.bed.tmp",sep="\t",quote=F,row.names=F)
+
+### sort bed tracks
+
