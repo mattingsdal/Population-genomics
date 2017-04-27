@@ -6,8 +6,12 @@ module load vcftools
 # VCFTOOLS
 ########
 
-vcftools --vcf freebayes.SNPs.filtered.final.recode.intersect.edit.vcf --keep norway.id --TajimaD 50000 --out 50
-vcftools --vcf freebayes.SNPs.filtered.final.recode.intersect.edit.vcf --weir-fst-pop south.id --weir-fst-pop west.id --fst-window-size 50000 --out 50
+vcftools --vcf freebayes.SNPs.filtered.final.recode.intersect.edit.vcf --keep norway.id --TajimaD 10000 --out 10
+sed 's/nan/0/g' 10.Tajima.D > 10.mod.Tajima.D
+vcftools --vcf freebayes.SNPs.filtered.final.recode.intersect.edit.vcf --weir-fst-pop south.id --weir-fst-pop west.id --fst-window-size 10000 --out 10
+vcftools --vcf freebayes.SNPs.filtered.final.recode.intersect.edit.vcf --keep norway.id --window-pi 10000 --out 10
+
+
 
 ########
 # HAPBIN
@@ -20,23 +24,47 @@ vcftools --vcf haplotypes.vcf --IMPUTE --keep scandinavia.id --out hapbin
 awk 'BEGIN { FS="-"} {print $1} hapbin.impute.legend >chr
 awk  '{print $1"\t"$2/1000000"\t"$2}' hapbin.impute.legend >snp
 paste chr snp | sed 1d >hapbin.map
+
 ihsbin --hap hapbin.impute.hap --map hapbin.map -o iHS_score
 
 ########
 # make bed tracks in R
 ########
+module load R
+R
+options(scipen=999)
 
-Tajima=read.table("50.Tajima.D",sep="\t",header=T)
-Fst=read.table("50.windowed.weir.fst",sep="\t",header=T)
+Tajima=read.table("10.mod.Tajima.D",sep="\t",header=T)
+Fst=read.table("10.windowed.weir.fst",sep="\t",header=T)
 ihs=read.table("iHS_hapbin_scandinavia2",sep="\t",header=T,row.names=NULL)
 
 IHS=cbind(ihs[,1],ihs[,2],ihs[,2]+1,ihs[,7])
-TAJIMA=cbind(as.character(Tajima[,1]),Tajima[,2],Tajima[,2]+49999,Tajima[,4])
-FST=cbind(as.character(Fst[,1]),Fst[,2],Fst[,2]+49999,Fst[,6])
+TAJIMA=cbind(as.character(Tajima[,1]),Tajima[,2],Tajima[,2]+9999,Tajima[,4])
+FST=cbind(as.character(Fst[,1]),Fst[,2],Fst[,2]+9999,Fst[,6])
 
 write.table(FST,"FST.bed.tmp",sep="\t",quote=F,row.names=F)
 write.table(IHS,"IHS.bed.tmp",sep="\t",quote=F,row.names=F)
 write.table(TAJIMA,"TAJIMA.bed.tmp",sep="\t",quote=F,row.names=F)
+q()
+n
 
-### sort bed tracks
+sed 1d TAJIMA.bed.tmp >TAJIMA.bed
+sed 1d FST.bed.tmp >FST.bed
+sed 1d IHS.bed.tmp >tmp
+sed 's/-//g' tmp >iHS.bed
+
+
+### intersect with gene file
+
+awk '{print $1"\t"$4"\t"$5"\t"$9}' Pfam.genes | sed 's/_//g' >tmp
+bedtools sort -i tmp >Pfam.genes2
+
+
+
+########
+# assign max iHS value to intersecting gene
+########
+
+bedtools map -a Pfam.genes2 -b iHS.bed -c 4 -o max -null -1 >genes_with_ihs
+
 
