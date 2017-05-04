@@ -1,5 +1,7 @@
 cd /usit/abel/u1/mortema/software/lamp-ld
 # test is largest contig 5 Mb
 perl lait.pl lamp 2 test.map test.ped out/
+cd out
 /usit/abel/u1/mortema/software/lamp-ld/bin/lamp/bin/lamp config.txt
+rm -rf tmp
 /usit/abel/u1/mortema/software/lamp-ld/bin/lamp/bin/generategraph.sh ~/software/lamp-ld/out/ancestry.txt
