@@ -5,3 +5,12 @@ cd out
 /usit/abel/u1/mortema/software/lamp-ld/bin/lamp/bin/lamp config.txt
 rm -rf tmp
 /usit/abel/u1/mortema/software/lamp-ld/bin/lamp/bin/generategraph.sh ~/software/lamp-ld/out/ancestry.txt
+
+
+
+
+
+### BEST
+cd /usit/abel/u1/mortema/software/lamp.x86_64-unknown-linux-gnu.REL_2_5/test
+../bin/lamp config.txt
+../bin/generategraph.sh ancestry.txt
