@@ -1536,7 +1536,7 @@ eems.plots <- function(mcmcpath,
     
     ## Plot filled contour of estimated effective migration rates
     save.graphics(paste0(plotpath, '-mrates'), save.params)
-    par(las = 1, font.main = 1, xpd = xpd)
+    par(las = 1, font.main = 2, xpd = xpd)
     mrates.raster <- average.eems.contours(mcmcpath, dimns, longlat, plot.params,
                                            is.mrates = TRUE, plot.xy = m.plot.xy)
     dev.off( )
@@ -1546,7 +1546,7 @@ eems.plots <- function(mcmcpath,
     
     ## Plot filled contour of estimated effective diversity rates
     save.graphics(paste0(plotpath, '-qrates'), save.params)
-    par(las = 1, font.main = 1, xpd = xpd)
+    par(las = 1, font.main = 2, xpd = xpd)
     qrates.raster <- average.eems.contours(mcmcpath, dimns, longlat, plot.params,
                                            is.mrates = FALSE, plot.xy = q.plot.xy)
     dev.off( )
@@ -1565,7 +1565,7 @@ eems.plots <- function(mcmcpath,
         }
         
         save.graphics(paste0(plotpath, '-mkey'), save.params)
-        par(las = 1, font.main = 1, xpd = xpd, mar = c(0, 1, 5, 8))
+        par(las = 1, font.main = 2, xpd = xpd, mar = c(0, 1, 5, 8))
         myfilled.legend(levels = mrates.raster$eems.levels,
                         col = mrates.raster$eems.colors,
                         key.axes = axis(4, tick = FALSE, hadj = 1, line = 4, cex.axis = 2),
@@ -1573,7 +1573,7 @@ eems.plots <- function(mcmcpath,
                                           side = 3, cex = 2.5, line = 1.5, font = 2))
         dev.off( )
         save.graphics(paste0(plotpath, '-qkey'), save.params)
-        par(las = 1, font.main = 1, xpd = xpd, mar = c(0, 1, 5, 8))
+        par(las = 1, font.main = 2, xpd = xpd, mar = c(0, 1, 5, 8))
         myfilled.legend(levels = qrates.raster$eems.levels,
                         col = qrates.raster$eems.colors,
                         key.axes = axis(4, tick = FALSE, hadj = 1, line = 6, cex.axis = 2),
@@ -1587,13 +1587,13 @@ eems.plots <- function(mcmcpath,
     
     ## Plot trace plot of posterior probability to check convergence
     save.graphics(paste0(plotpath, '-pilogl'), save.params)
-    par(las = 0, font.main = 1, mar = c(5, 5, 4, 5) + 0.1, xpd = TRUE)
+    par(las = 0, font.main = 2, mar = c(5, 5, 4, 5) + 0.1, xpd = TRUE)
     plot.logposterior(mcmcpath)
     dev.off( )
     
     ## Plot scatter plots of observed vs fitted genetic differences
     save.graphics(paste0(plotpath, '-rdist'), save.params)
-    par(las = 1, font.main = 1, mar = c(5, 5, 4, 2) + 0.1)
+    par(las = 1, font.main = 2, mar = c(5, 5, 4, 2) + 0.1)
     dist.points <- dist.scatterplot(mcmcpath, longlat, plot.params,
                                     remove.singletons = remove.singletons,
                                     add.abline = add.abline, add.r.squared = add.r.squared)
@@ -1689,7 +1689,7 @@ eems.voronoi.samples <- function(mcmcpath,
     plot.params$add.demes <- FALSE
     
     save.graphics(paste0(plotpath, '-mvoronoi'), save.params)
-    par(las = 1, font.main = 1)
+    par(las = 1, font.main = 2)
     for (draw in seq(post.draws)) {
         ## Choose one output directory at random
         voronoi.diagram(sample(mcmcpath, 1),
@@ -1701,7 +1701,7 @@ eems.voronoi.samples <- function(mcmcpath,
     plot.params$all.demes = add.demes
     
     save.graphics(paste0(plotpath, '-qvoronoi'), save.params)
-    par(las = 1, font.main = 1)
+    par(las = 1, font.main = 2)
     for (draw in seq(post.draws)) {
         ## Choose one output directory at random
         voronoi.diagram(sample(mcmcpath, 1),
@@ -1785,7 +1785,7 @@ eems.posterior.draws <- function(mcmcpath,
     save.params <- list(height = plot.height, width = plot.width, res = res, out.png = out.png)
     
     save.graphics(paste0(plotpath, '-mvoronoi'), save.params)
-    par(las = 1, font.main = 1)
+    par(las = 1, font.main = 2)
     for (draw in seq(post.draws)) {
         ## Choose one output directory at random
         mrates.raster <- random.eems.contour(sample(mcmcpath, 1), dimns, longlat,
@@ -1794,7 +1794,7 @@ eems.posterior.draws <- function(mcmcpath,
     dev.off( )
     
     save.graphics(paste0(plotpath, '-qvoronoi'), save.params)
-    par(las = 1, font.main = 1)
+    par(las = 1, font.main = 2)
     for (draw in seq(post.draws)) {
         ## Choose one output directory at random
         qrates.raster <- random.eems.contour(sample(mcmcpath, 1), dimns, longlat, plot.params,
@@ -1855,7 +1855,7 @@ eems.resid.heatmap <- function(datapath,
     eems.resid <- heatmap.resid(datapath, mcmcpath)
     save(eems.resid, file = paste0(plotpath, '-eems-resid.RData'))
     save.graphics(paste0(plotpath, '-eems-resid'), save.params)
-    par(las = 1, font.main = 1, mar = c(0, 0, 0, 0)+0.1)
+    par(las = 1, font.main = 2, mar = c(0, 0, 0, 0)+0.1)
     key <- myheatmap(abs(eems.resid), col = heatmap.cols, colscale = heatmap.colscale)
     dev.off( )
     
@@ -1868,7 +1868,7 @@ eems.resid.heatmap <- function(datapath,
     }
     
     save.graphics(paste0(plotpath, '-eems-resid-key'), save.params)
-    par(las = 1, font.main = 1, mar = c(1, 1, 5, 8))
+    par(las = 1, font.main = 2, mar = c(1, 1, 5, 8))
     myfilled.legend(levels = key$levels, col = key$colors,
                     key.axes = axis(4, tick = FALSE, hadj = 1, line = 4, cex.axis = 2),
                     key.title = mtext("abs(r)", side = 3, cex = 2.5, line = 1.5, font = 2))
