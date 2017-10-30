@@ -611,7 +611,7 @@ null.eems.contour <- function(mcmcpath, longlat, plot.params,
     myfilledContour(rr, col = eems.colors, levels = eems.levels, asp = 1,
                     add.key = plot.params$add.colbar,
                     key.axes = axis(4, tick = FALSE, hadj = 1, line = 3, cex.axis = 1.5),
-                    key.title = mtext(key.title, side = 3, cex = 1.5, line = 1.5, font = 1),
+                    key.title = mtext(key.title, side = 3, cex = 1.5, line = 1.5, font = 2),
                     add.title = plot.params$add.title,
                     plot.title = mtext(text = main.title, side = 3, line = 0, cex = 1.5),
                     plot.axes = {
@@ -646,7 +646,7 @@ one.eems.contour <- function(mcmcpath, dimns, Zmean, longlat, plot.params, is.mr
     myfilledContour(rr, col = eems.colors, levels = eems.levels, asp = 1,
                     add.key = plot.params$add.colbar,
                     key.axes = axis(4, tick = FALSE, hadj = 1, line = 3, cex.axis = 1.5),
-                    key.title = mtext(key.title, side = 3, cex = 1.5, line = 1.5, font = 1),
+                    key.title = mtext(key.title, side = 3, cex = 1.5, line = 1.5, font = 2),
                     add.title = plot.params$add.title,
                     plot.title = mtext(text = main.title, side = 3, line = 0, cex = 1.5),
                     plot.axes = {
@@ -693,8 +693,8 @@ one.prob.contour <- function(mcmcpath, dimns, Props, longlat, plot.params, is.mr
                     key.axes = axis(4, at = prob.levels, labels = prob.labels,
                                     tick = FALSE, hadj = 0, line = 1, cex.axis = 1.5),
                     key.title = { 
-                        mtext(key.greaterthan0, side = 3, cex = 1.5, line = 1.5, font = 1);
-                        mtext(key.lessthan0, side = 1, cex = 1.5, line = 1.5, font = 1); },
+                        mtext(key.greaterthan0, side = 3, cex = 1.5, line = 1.5, font = 2);
+                        mtext(key.lessthan0, side = 1, cex = 1.5, line = 1.5, font = 2); },
                     add.title = TRUE, #plot.params$add.title,
                     plot.title = mtext(text = main.title, side = 3, line = 0, cex = 1.5),
                     plot.axes = {
@@ -1570,7 +1570,7 @@ eems.plots <- function(mcmcpath,
                         col = mrates.raster$eems.colors,
                         key.axes = axis(4, tick = FALSE, hadj = 1, line = 4, cex.axis = 2),
                         key.title = mtext(expression(paste(log, "(", italic(m), ")", sep = "")),
-                                          side = 3, cex = 2.5, line = 1.5, font = 1))
+                                          side = 3, cex = 2.5, line = 1.5, font = 2))
         dev.off( )
         save.graphics(paste0(plotpath, '-qkey'), save.params)
         par(las = 1, font.main = 1, xpd = xpd, mar = c(0, 1, 5, 8))
@@ -1578,7 +1578,7 @@ eems.plots <- function(mcmcpath,
                         col = qrates.raster$eems.colors,
                         key.axes = axis(4, tick = FALSE, hadj = 1, line = 6, cex.axis = 2),
                         key.title = mtext(expression(paste(log, "(", italic(q), ")", sep = "")),
-                                          side = 3, cex = 2.5, line = 1.5, font = 1))
+                                          side = 3, cex = 2.5, line = 1.5, font = 2))
         dev.off( )
     }
     
@@ -1871,7 +1871,7 @@ eems.resid.heatmap <- function(datapath,
     par(las = 1, font.main = 1, mar = c(1, 1, 5, 8))
     myfilled.legend(levels = key$levels, col = key$colors,
                     key.axes = axis(4, tick = FALSE, hadj = 1, line = 4, cex.axis = 2),
-                    key.title = mtext("abs(r)", side = 3, cex = 2.5, line = 1.5, font = 1))
+                    key.title = mtext("abs(r)", side = 3, cex = 2.5, line = 1.5, font = 2))
     dev.off( )
 }
 #' A function to plot the constructed population grid and, optionally, the initial sampling locations.
