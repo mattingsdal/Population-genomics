@@ -16,7 +16,9 @@ bcftools view -O v -m 2 -M 2 --types snps -i 'QUAL>40' freebayes-paralell.bcf >f
 vcftools --vcf freebayes-paralell.SNPs.vcf --minDP 4 --maxDP 30 --max-missing 0.95 --recode --out freebayes.SNPs.filtered.final
 
 
-# do the same with samtools mpileup
+# make snps names
+cat freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.beagle.vcf | perl -lane 'if($F[0] !~ /^#/) {$F[2] = $F[0]."_".$F[1];print join("\t",@F);} else {print $_;}' > SNP_renamed.vcf
+
 
 
 
