@@ -1,3 +1,119 @@
+### required a tabix'ed vcf file
+### put interesting contigs in file "contigs_1MB"
+
+##############################################
+## SOUTH ONLY vs SOUTH, 4 distinguished individuals
+VCF=DP6.recode.vcf.gz
+for pop_south in GF01 GF49 TV69 AR61;do
+    while read line;do
+smc++ vcf2smc -d $pop_south $pop_south $VCF SOUTH/$pop_south.$line.smc.gz $line South:GF28,GF03,GF05,GF02,GF23,GF38,GF49,GF01,GF07,GF04,TV66,TV67,TV69,TV65,TV68,TV73,TV74,TV70,AR63,AR68,AR64,AR65,AR67,AR66,AR62,AR61
+done < contigs_1MB
+done
+
+
+##############################################
+## WEST ONLY, 4 distinguished individuals
+VCF=DP6.recode.vcf.gz
+for pop_west in NH61 NH60 SM111 ST42;do
+    while read line;do
+smc++ vcf2smc -d $pop_west $pop_west $VCF WEST/$pop_west.$line.smc.gz $line West:ST42,ST45,ST41,ST48,ST46,ST43,ST44,ST47,NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
+done < contigs_1MB
+done
+
+
+##############################################
+## ARD ONLY, 4 distinguished individuals  
+VCF=DP6.recode.vcf.gz
+for pop_west in ARD20 ARD21 ARD18 ARD15;do
+    while read line;do
+smc++ vcf2smc -d $pop_west $pop_west $VCF ARD/$pop_west.$line.smc.gz $line Ard:ARD20,ARD23,ARD8,ARD21,ARD6,ARD18,ARD15
+done < contigs_1MB
+done
+
+smc++ estimate -o GF01/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 SOUTH/GF01*gz
+smc++ estimate -o GF49/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 SOUTH/GF49*gz
+smc++ estimate -o TV69/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 SOUTH/TV69*gz
+smc++ estimate -o AR61/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 SOUTH/AR61*gz
+
+smc++ estimate -o NH61/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 WEST/NH61*gz
+smc++ estimate -o NH60/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 WEST/NH60*gz
+smc++ estimate -o SM111/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 WEST/SM111*gz
+smc++ estimate -o ST42/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 WEST/ST42*gz
+
+smc++ estimate -o ARD20/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 ARD/ARD20*gz
+smc++ estimate -o ARD21/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 ARD/ARD21*gz
+smc++ estimate -o ARD18/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 ARD/ARD18*gz
+smc++ estimate -o ARD15/ --regularization-penalty 6 --ftol 0.001 --thinning 50 1e-8 ARD/ARD15*gz
+
+find /home/morten/Desktop/SMCPP/DP6/1MB/ -name "model.final.json" | xargs smc++ plot --csv -g 5 -x 100 10000 plot.pdf
+
+## split the combined csv to multiple files for gnuplot
+for i in {0..11}
+do
+awk -F, -v a="$i" '{if($5 == a) print $0}' plot.csv >$i.csv
+done
+
+## west
+### FOR PLOTTING IN GNUPLOT... see ARD/test.gp
+export GNUPLOT_PS_DIR="/home/morten/smcpp/share/gnuplot/4.6/PostScript/"
+gnuplot test2.gp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ST:ST48,ST46,ST44,ST42,ST41,ST45,ST47,ST43
 NH:NH61,NH60,NH64,NH65,NH67,NH69,NH61,NH68
 SM:SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
