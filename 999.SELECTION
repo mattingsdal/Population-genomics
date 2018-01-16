@@ -1,3 +1,24 @@
+# run SweeD on southern population
+while read p; do
+  echo $p
+  ~/software/plink --bfile freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs --chr $p --keep south.plink --recode-vcf --out sweed_south/${p}_south --allow-extra-chr
+  ~/software/sweed/SweeD -name ${p} -input ~/vcf/sweed_south/${p}_south.vcf -grid 200 -monomorphic -folded
+done <contigs_N50
+
+
+# run SweeD on western population
+while read p; do
+  echo $p
+  ~/software/plink --bfile freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs --chr $p --keep west.plink --recode-vcf --out sweed_west/${p}_west --allow-extra-chr
+  ~/software/sweed/SweeD -name ${p} -input ~/vcf/sweed_west/${p}_west.vcf -grid 200 -monomorphic -folded
+done <contigs_N50
+
+
+
+
+
+
+
 module load vcftools
 
 # calculate genome-wide stats
