@@ -38,9 +38,27 @@ renice -n 5 -u mortema
  
 # index alleles
 bcftools index test.vcf.gz
- 
+
+/usit/abel/u1/mortema/software/bcftools-1.6/bcftools index merged.vcf.gz
+bcftools view -m2 -M2 -v snps -s out30.sorted.bam merged.vcf.gz | bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n' | awk '{OFS="\t";if($5=="0/0"){print $1,$2,$3,$4,$3} if($5=="0/1"){print $1,$2,$3,$4,$4}}' > aa.yass.tab
+
+bgzip aa.yass.tab
+tabix -s1 -b2 -e2 aa.yass.tab.gz
+
+echo '##INFO=<ID=AA,Number=1,Type=Character,Description="Ancestral allele">' > hdr.txt
+bcftools annotate -a aa.yass.tab.gz -c CHROM,POS,REF,ALT,INFO/AA -h hdr.txt -Oz -o data101_goodAA.vcf.gz merged.vcf.gz
 
 ## merge
 /usit/abel/u1/mortema/software/bcftools-1.6/bcftools merge ../vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.vcf.gz test.vcf.gz -Oz -o merged.vcf.gz
 /usit/abel/u1/mortema/software/bcftools-1.6/bcftools index merged.vcf.gz
+
+# 1/1 is missing alignmnet, 0/0 is maching ref allele, 0/1 is present in aligmnet but missmatch
+bcftools view -m2 -M2 -v snps -s out30.sorted.bam merged.vcf.gz | bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n' | awk '{OFS="\t";if($5=="0/0"){print $1,$2,$3,$4,$3} if($5=="0/1"){print $1,$2,$3,$4,$4}}' > aa.yass.tab
+
+# annotate vcf file
+echo '##INFO=<ID=AA,Number=1,Type=Character,Description="Ancestral allele">' > hdr.txt
+bcftools annotate -a aa.yass.tab.gz -c CHROM,POS,REF,ALT,INFO/AA -h hdr.txt -Oz -o data101_goodAA.vcf.gz merged.vcf.gz
+
+# only keep snps with ancetral allele
+
 
