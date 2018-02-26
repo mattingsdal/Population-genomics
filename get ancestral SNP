@@ -72,8 +72,25 @@ bcftools annotate -a aa.yass.tab.gz -c CHROM,POS,REF,ALT,INFO/AA -h hdr.txt -Oz 
 # remove SNPs which does not have AA state
 bcftools view -m2 -M2 -v snps -e 'INFO/AA=="."' goodAA.vcf.gz -Oz -o only_AA.vcf.gz
 
-# change ref allele and remove the "sample alignment"
-vcftools --gzvcf only_AA.vcf.gz --derived --remove-indv out30.sorted.bam --recode --out final.vcf
+## prepare file to make ancestral ellele to referance allele
+awk '{print $3"\t"$4"\t"$5"\t"$8}' only_AA.vcf >la
+grep SYMME la>la2
+awk -F";" '{print $NF}' la2 | sed 's/AA=//g' >aa
+paste la2 aa >la3
+awk '{print $1"\t"$2"\t"$3"\t"$5}' la3 >aa_info
+
+
+~/software/plink --vcf only_AA.vcf --a2-allele aa_info 4 1 --recode-vcf --out test --allow-extra-chr --const-fid removeme
+# remove sample contianing aligmnet info
+vcftools --vcf test.vcf --remove-indv removeme_out30.sorted.bam --recode --out test2
+
+# correclt plinks FID
+sed 's/removeme_//g' test.vcf >../vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf
+
+bgzip -c freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf > freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf.gz
+tabix -p vcf freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf.gz
+
+
 
 
  
