@@ -1,3 +1,90 @@
+
+###################################################################################################
+###################################################################################################
+## export data for 4 individuals pr. populaiton and estimate history
+###################################################################################################
+###################################################################################################
+
+VCF=/usit/abel/u1/mortema/vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf.gz
+for pop_south in GF01 GF49 TV69 TV70;do
+    while read line;do
+/usit/abel/u1/mortema/miniconda3/bin/smc++ vcf2smc -d $pop_south $pop_south $VCF SOUTH/$pop_south.$line.smc.gz $line South:GF28,GF03,GF05,GF02,GF23,GF38,GF49,GF01,GF07,GF04,TV66,TV67,TV69,TV65,TV68,TV73,TV74,TV70,AR63,AR68,AR64,AR65,AR67,AR66,AR62,AR61
+done < /usit/abel/u1/mortema/vcf/contigs_1MB
+done
+
+
+VCF=/usit/abel/u1/mortema/vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf.gz
+for pop_west in NH61 NH60 SM111 SM114;do
+    while read line;do
+/usit/abel/u1/mortema/miniconda3/bin/smc++ vcf2smc -d $pop_west $pop_west $VCF WEST/$pop_west.$line.smc.gz $line West:ST42,ST45,ST41,ST48,ST46,ST43,ST44,ST47,NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
+done < /usit/abel/u1/mortema/vcf/contigs_1MB
+done
+
+
+VCF=/usit/abel/u1/mortema/vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf.gz
+for pop_west in ARD20 ARD21 ARD18 ARD15;do
+    while read line;do
+/usit/abel/u1/mortema/miniconda3/bin/smc++ vcf2smc -d $pop_west $pop_west $VCF ARD/$pop_west.$line.smc.gz $line Ard:ARD20,ARD23,ARD8,ARD21,ARD6,ARD18,ARD15
+done < /usit/abel/u1/mortema/vcf/contigs_1MB
+done
+
+
+/usit/abel/u1/mortema/miniconda3/bin/smc++ estimate -o WEST/ --unfold --t1 50 --tK 50000 --cores 10 --thinning 50 1e-8 WEST/*gz
+/usit/abel/u1/mortema/miniconda3/bin/smc++ estimate -o SOUTH/ --unfold --t1 50 --tK 50000 --cores 10 --thinning 50 1e-8 SOUTH/*gz
+/usit/abel/u1/mortema/miniconda3/bin/smc++ estimate -o ARD/ --unfold --t1 50 --tK 50000 --cores 10 --thinning 50 1e-8 ARD/*gz
+
+/usit/abel/u1/mortema/miniconda3/bin/smc++ plot -g 3 west.pdf WEST/model.final.json
+/usit/abel/u1/mortema/miniconda3/bin/smc++ plot -g 3 south.pdf SOUTH/model.final.json
+/usit/abel/u1/mortema/miniconda3/bin/smc++ plot -g 3 ard.pdf ARD/model.final.json
+
+###################################################################################################
+###################################################################################################
+#### two population split
+###################################################################################################
+###################################################################################################
+
+
+VCF=/usit/abel/u1/mortema/vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf.gz
+    while read line;do
+
+/usit/abel/u1/mortema/miniconda3/bin/smc++ vcf2smc $VCF SOUTH_and_WEST/south_west.$line.smc.gz $line South:GF28,GF03,GF05,GF02,GF23,GF38,GF49,GF01,GF07,GF04,TV66,TV67,TV69,TV65,TV68,TV73,TV74,TV70,AR63,AR68,AR64,AR65,AR67,AR66,AR62,AR61 West:ST42,ST45,ST41,ST48,ST46,ST43,ST44,ST47,NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM116,SM117,SM118,SM115,SM111,SM113,SM114
+/usit/abel/u1/mortema/miniconda3/bin/smc++ vcf2smc $VCF SOUTH_and_WEST/west_south.$line.smc.gz $line West:SM116,ST42,ST45,ST41,ST48,ST46,ST43,ST44,ST47,NH61,NH60,NH64,NH65,NH67,NH69,NH63,NH68,SM112,SM117,SM118,SM115,SM111,SM113,SM114 South:GF28,GF03,GF05,GF02,GF23,GF38,GF49,GF01,GF07,GF04,TV66,TV67,TV69,TV65,TV68,TV73,TV74,TV70,AR63,AR68,AR64,AR65,AR67,AR66,AR62,AR61
+
+done < /usit/abel/u1/mortema/vcf/contigs_1MB
+done
+
+
+/usit/abel/u1/mortema/miniconda3/bin/smc++ split --unfold --thinning 50 -o split/ SOUTH/model.final.json WEST/model.final.json SOUTH_and_WEST/*.smc.gz
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### required a tabix'ed vcf file
 ### put interesting contigs in file "contigs_1MB"
 
