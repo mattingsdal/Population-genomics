@@ -147,6 +147,67 @@ gnuplot test2.gp
 
 
 
+  set size 1, 0.8;
+  set xran [5000:1000000];
+  set log x;
+  set format x "10^{%L}";
+  set mxtics 10;
+  set mytics 10;
+  unset grid;
+  set key right top;
+  set xtics font "Helvetica,16";
+  set ytics nomirror font "Helvetica,16";
+  set xlab "Years (g=5, {/Symbol m}=1.0x10^{-8})" font "Helvetica,16";
+  set t po eps enhance so co "Helvetica,16";
+
+  set yran [0:*];
+  set ylab "Effective population size (x10^4)" font "Helvetica,16";
+  set out "SM111.eps";
+  set style line 1 lt 1 lc rgb "#FF0000" lw 4;
+  set style line 2 lt 1 lc rgb "#00C000" lw 4;
+  set style line 3 lt 1 lc rgb "#0080FF" lw 4;
+  set style line 4 lt 1 lc rgb "#C000FF" lw 4;
+  set style line 5 lt 1 lc rgb "#00EEEE" lw 4;
+  set style line 6 lt 1 lc rgb "#C04000" lw 4;
+  set style line 7 lt 1 lc rgb "#C8C800" lw 4;
+  set style line 8 lt 1 lc rgb "#FF80FF" lw 4;
+  set style line 9 lt 1 lc rgb "#4E642E" lw 4;
+  set style line 10 lt 1 lc rgb "#800000" lw 4;
+  set style line 11 lt 1 lc rgb "#67B7F7" lw 4;
+  set style line 12 lt 1 lc rgb "#FFC127" lw 4;
+  set style line 32 lt 1 lc rgb "#FFC0C0" lw 1;
+  plot "SM111.0.txt" u 1:2 t "SM" w st ls 1
+  set size 1, 0.8;
+  set xran [5000:1000000];
+  set log x;
+  set format x "10^{%L}";
+  set mxtics 10;
+  set mytics 10;
+  unset grid;
+  set key off;
+  set xtics font "Helvetica,16";
+  set ytics nomirror font "Helvetica,16";
+  set xlab "Years (g=5, {/Symbol m}=1.0x10^{-8})" font "Helvetica,16";
+  set t po eps enhance so co "Helvetica,16";
+
+  set yran [0:*];
+  set ylab "Effective population size (x10^4)" font "Helvetica,16";
+  set out "SM111.boot.eps";
+  set style line 1 lt 1 lc rgb "#FF0000" lw 4;
+  set style line 2 lt 1 lc rgb "#00C000" lw 4;
+  set style line 3 lt 1 lc rgb "#0080FF" lw 4;
+  set style line 4 lt 1 lc rgb "#C000FF" lw 4;
+  set style line 5 lt 1 lc rgb "#00EEEE" lw 4;
+  set style line 6 lt 1 lc rgb "#C04000" lw 4;
+  set style line 7 lt 1 lc rgb "#C8C800" lw 4;
+  set style line 8 lt 1 lc rgb "#FF80FF" lw 4;
+  set style line 9 lt 1 lc rgb "#4E642E" lw 4;
+  set style line 10 lt 1 lc rgb "#800000" lw 4;
+  set style line 11 lt 1 lc rgb "#67B7F7" lw 4;
+  set style line 12 lt 1 lc rgb "#FFC127" lw 4;
+  set style line 32 lt 1 lc rgb "#FFC0C0" lw 1;
+  plot "SM111.boot.1.txt" u 1:2 w st not ls 32, "SM111.boot.2.txt" u 1:2 w st not ls 32, "SM111.boot.3.txt" u 1:2 w st not ls 32, "SM111.boot.4.txt" u 1:2 w st not ls 32, "SM111.boot.5.txt" u 1:2 w st not ls 32, "SM111.boot.6.txt" u 1:2 w st not ls 32, "SM111.boot.7.txt" u 1:2 w st not ls 32, "SM111.boot.8.txt" u 1:2 w st not ls 32, "SM111.boot.9.txt" u 1:2 w st not ls 32, "SM111.boot.10.txt" u 1:2 w st not ls 32, "SM111.boot.11.txt" u 1:2 w st not ls 32, "SM111.boot.12.txt" u 1:2 w st not ls 32, "SM111.boot.13.txt" u 1:2 w st not ls 32, "SM111.boot.14.txt" u 1:2 w st not ls 32, "SM111.boot.15.txt" u 1:2 w st not ls 32, "SM111.boot.16.txt" u 1:2 w st not ls 32, "SM111.boot.17.txt" u 1:2 w st not ls 32, "SM111.boot.18.txt" u 1:2 w st not ls 32, "SM111.boot.19.txt" u 1:2 w st not ls 32, "SM111.boot.20.txt" u 1:2 w st not ls 32, "SM111.boot.21.txt" u 1:2 w st not ls 32, "SM111.boot.22.txt" u 1:2 w st not ls 32, "SM111.boot.23.txt" u 1:2 w st not ls 32, "SM111.boot.24.txt" u 1:2 w st not ls 32, "SM111.boot.25.txt" u 1:2 w st not ls 32, "SM111.boot.26.txt" u 1:2 w st not ls 32, "SM111.boot.27.txt" u 1:2 w st not ls 32, "SM111.boot.28.txt" u 1:2 w st not ls 32, "SM111.boot.29.txt" u 1:2 w st not ls 32, "SM111.boot.30.txt" u 1:2 w st not ls 32, "SM111.boot.31.txt" u 1:2 w st not ls 32, "SM111.boot.32.txt" u 1:2 w st not ls 32, "SM111.boot.33.txt" u 1:2 w st not ls 32, "SM111.boot.34.txt" u 1:2 w st not ls 32, "SM111.boot.35.txt" u 1:2 w st not ls 32, "SM111.boot.36.txt" u 1:2 w st not ls 32, "SM111.boot.37.txt" u 1:2 w st not ls 32, "SM111.boot.38.txt" u 1:2 w st not ls 32, "SM111.boot.39.txt" u 1:2 w st not ls 32, "SM111.boot.40.txt" u 1:2 w st not ls 32, "SM111.boot.41.txt" u 1:2 w st not ls 32, "SM111.boot.42.txt" u 1:2 w st not ls 32, "SM111.boot.43.txt" u 1:2 w st not ls 32, "SM111.boot.44.txt" u 1:2 w st not ls 32, "SM111.boot.45.txt" u 1:2 w st not ls 32, "SM111.boot.46.txt" u 1:2 w st not ls 32, "SM111.boot.47.txt" u 1:2 w st not ls 32, "SM111.boot.48.txt" u 1:2 w st not ls 32, "SM111.boot.49.txt" u 1:2 w st not ls 32, "SM111.boot.50.txt" u 1:2 w st not ls 32, "SM111.boot.51.txt" u 1:2 w st not ls 32, "SM111.boot.52.txt" u 1:2 w st not ls 32, "SM111.boot.53.txt" u 1:2 w st not ls 32, "SM111.boot.54.txt" u 1:2 w st not ls 32, "SM111.boot.55.txt" u 1:2 w st not ls 32, "SM111.boot.56.txt" u 1:2 w st not ls 32, "SM111.boot.57.txt" u 1:2 w st not ls 32, "SM111.boot.58.txt" u 1:2 w st not ls 32, "SM111.boot.59.txt" u 1:2 w st not ls 32, "SM111.boot.60.txt" u 1:2 w st not ls 32, "SM111.boot.61.txt" u 1:2 w st not ls 32, "SM111.boot.62.txt" u 1:2 w st not ls 32, "SM111.boot.63.txt" u 1:2 w st not ls 32, "SM111.boot.64.txt" u 1:2 w st not ls 32, "SM111.boot.65.txt" u 1:2 w st not ls 32, "SM111.boot.66.txt" u 1:2 w st not ls 32, "SM111.boot.67.txt" u 1:2 w st not ls 32, "SM111.boot.68.txt" u 1:2 w st not ls 32, "SM111.boot.69.txt" u 1:2 w st not ls 32, "SM111.boot.70.txt" u 1:2 w st not ls 32, "SM111.boot.71.txt" u 1:2 w st not ls 32, "SM111.boot.72.txt" u 1:2 w st not ls 32, "SM111.boot.73.txt" u 1:2 w st not ls 32, "SM111.boot.74.txt" u 1:2 w st not ls 32, "SM111.boot.75.txt" u 1:2 w st not ls 32, "SM111.boot.76.txt" u 1:2 w st not ls 32, "SM111.boot.77.txt" u 1:2 w st not ls 32, "SM111.boot.78.txt" u 1:2 w st not ls 32, "SM111.boot.79.txt" u 1:2 w st not ls 32, "SM111.boot.80.txt" u 1:2 w st not ls 32, "SM111.boot.81.txt" u 1:2 w st not ls 32, "SM111.boot.82.txt" u 1:2 w st not ls 32, "SM111.boot.83.txt" u 1:2 w st not ls 32, "SM111.boot.84.txt" u 1:2 w st not ls 32, "SM111.boot.85.txt" u 1:2 w st not ls 32, "SM111.boot.86.txt" u 1:2 w st not ls 32, "SM111.boot.87.txt" u 1:2 w st not ls 32, "SM111.boot.88.txt" u 1:2 w st not ls 32, "SM111.boot.89.txt" u 1:2 w st not ls 32, "SM111.boot.90.txt" u 1:2 w st not ls 32, "SM111.boot.91.txt" u 1:2 w st not ls 32, "SM111.boot.92.txt" u 1:2 w st not ls 32, "SM111.boot.93.txt" u 1:2 w st not ls 32, "SM111.boot.94.txt" u 1:2 w st not ls 32, "SM111.boot.95.txt" u 1:2 w st not ls 32, "SM111.boot.96.txt" u 1:2 w st not ls 32, "SM111.boot.97.txt" u 1:2 w st not ls 32, "SM111.boot.98.txt" u 1:2 w st not ls 32, "SM111.boot.99.txt" u 1:2 w st not ls 32, "SM111.boot.100.txt" u 1:2 w st not ls 32, "SM111.boot.0.txt" u 1:2 t "popsize" w st ls 1;
+
 
 
 
