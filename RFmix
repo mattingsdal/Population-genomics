@@ -1,0 +1,22 @@
+module load python2
+
+## make class file (0 = test samples, 1,2.... referance samples. One number pr haplotype. 
+
+grep SYMME_00023145 ~/vcf/beagle_commonSNPs.vcf | grep -v '#' | cut -f10- | tr -d '\t|' > ~/vcf/rfmix/alleles.txt
+grep SYMME_00023145 ~/vcf/beagle_commonSNPs.vcf | awk '{print $2/1000000}' > ~/vcf/rfmix/snploc.txt
+python RunRFMix.py PopPhased /usit/abel/u1/mortema/vcf/rfmix/alleles.txt /usit/abel/u1/mortema/vcf/rfmix/class.txt /usit/abel/u1/mortema/vcf/rfmix/snploc.txt --forward-backward  -o SYMME_00023145
+
+grep SYMME_00000053  ~/vcf/beagle_commonSNPs.vcf | grep -v '#' | cut -f10- | tr -d '\t|' > ~/vcf/rfmix/alleles.txt
+grep SYMME_00000053  ~/vcf/beagle_commonSNPs.vcf | awk '{print $2/1000000}' > ~/vcf/rfmix/snploc.txt
+python RunRFMix.py PopPhased /usit/abel/u1/mortema/vcf/rfmix/alleles.txt /usit/abel/u1/mortema/vcf/rfmix/class.txt /usit/abel/u1/mortema/vcf/rfmix/snploc.txt --forward-backward  -o SYMME_00000053
+
+grep SYMME_00000084  ~/vcf/beagle_commonSNPs.vcf | grep -v '#' | cut -f10- | tr -d '\t|' > ~/vcf/rfmix/alleles.txt
+grep SYMME_00000084  ~/vcf/beagle_commonSNPs.vcf | awk '{print $2/1000000}' > ~/vcf/rfmix/snploc.txt
+python RunRFMix.py PopPhased /usit/abel/u1/mortema/vcf/rfmix/alleles.txt /usit/abel/u1/mortema/vcf/rfmix/class.txt /usit/abel/u1/mortema/vcf/rfmix/snploc.txt --forward-backward  -o SYMME_00000084
+
+ 
+grep SYMME_00023269  ~/vcf/beagle_commonSNPs.vcf | grep -v '#' | cut -f10- | tr -d '\t|' > ~/vcf/rfmix/alleles.txt
+grep SYMME_00023269  ~/vcf/beagle_commonSNPs.vcf | awk '{print $2/1000000}' > ~/vcf/rfmix/snploc.txt
+python RunRFMix.py PopPhased /usit/abel/u1/mortema/vcf/rfmix/alleles.txt /usit/abel/u1/mortema/vcf/rfmix/class.txt /usit/abel/u1/mortema/vcf/rfmix/snploc.txt --forward-backward  -o SYMME_00023269
+
+ 
