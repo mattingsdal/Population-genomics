@@ -1,0 +1,6 @@
+/OCTOPUS.run \
+_f /usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/samples.txt \
+_o /usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/octopus \
+_u /usit/abel/u1/mortema/software/usearch10.0.240_i86linux32 \
+_p 10 \
+_r /usit/abel/u1/mortema/software/OCToPUS/silva.eukarya/nogap.eukarya.fasta
