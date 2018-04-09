@@ -1,3 +1,5 @@
+### use VSEARCH @ rognes
+
 # merge paird end
 ~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 1_S8_L001_R1_001.fastq -reverse 1_S8_L001_R2_001.fastq -fastq_pctid 80 -fastqout S8.fq
 ~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 2_S1_L001_R1_001.fastq -reverse 2_S1_L001_R2_001.fastq -fastq_pctid 80 -fastqout S1.fq
