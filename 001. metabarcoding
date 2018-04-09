@@ -1,0 +1,25 @@
+# merge paird end
+~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 1_S8_L001_R1_001.fastq -reverse 1_S8_L001_R2_001.fastq -fastq_pctid 80 -fastqout S8.fq
+~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 2_S1_L001_R1_001.fastq -reverse 2_S1_L001_R2_001.fastq -fastq_pctid 80 -fastqout S1.fq
+~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 3_S2_L001_R1_001.fastq -reverse 3_S2_L001_R2_001.fastq -fastq_pctid 80 -fastqout S2.fq
+~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 4_S3_L001_R1_001.fastq -reverse 4_S3_L001_R2_001.fastq -fastq_pctid 80 -fastqout S3.fq
+~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 5_S4_L001_R1_001.fastq -reverse 5_S4_L001_R2_001.fastq -fastq_pctid 80 -fastqout S4.fq
+~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 6_S5_L001_R1_001.fastq -reverse 6_S5_L001_R2_001.fastq -fastq_pctid 80 -fastqout S5.fq
+~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 7_S6_L001_R1_001.fastq -reverse 7_S6_L001_R2_001.fastq -fastq_pctid 80 -fastqout S6.fq
+~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 8_S7_L001_R1_001.fastq -reverse 8_S7_L001_R2_001.fastq -fastq_pctid 80 -fastqout S7.fq
+
+
+## extract COI AND 18S sequences
+     for i in `seq 1 8`;
+        do
+	grep -B1 -A2 "GCTTGTCTCAAAGATTAAGCC" S${i}.fq | grep -v "^--$" >S${i}_18S.fq
+	grep -B1 -A2 "TGAAC.GT.TA.CC.CC" S${i}.fq | grep -v "^--$" >S${i}_COI.fq
+        done 
+        
+        
+# more 12 bp upstream and downstream in both 
+     for i in `seq 1 8`;
+        do       
+ 	~/software/usearch10.0.240_i86linux32 -fastx_truncate S${i}_18S.fq -stripleft 12 -stripright 12 -fastqout S${i}_18S.strip.fq
+ 	~/software/usearch10.0.240_i86linux32 -fastx_truncate S${i}_COI.fq -stripleft 12 -stripright 12 -fastqout S${i}_COI.strip.fq
+	done
