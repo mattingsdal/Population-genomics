@@ -1,0 +1,112 @@
+
+library(dada2)
+path <- "/cluster/home/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/fastq"
+
+fnFs <- sort(list.files(path, pattern="_R1_001.fastq", full.names = TRUE))
+fnRs <- sort(list.files(path, pattern="_R2_001.fastq", full.names = TRUE))
+
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 2)
+
+#plotQualityProfile(fnRs[1:4])
+#plotQualityProfile(fnFs[1:4])
+
+
+filt_path <- file.path(path, "filtered") # Place filtered files in filtered/ subdirectory
+filtFs <- file.path(filt_path, paste0(sample.names, "_F_filt.fastq.gz"))
+filtRs <- file.path(filt_path, paste0(sample.names, "_R_filt.fastq.gz"))
+
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(250,250),
+              maxN=0, maxEE=c(0.5,0.5), trimLeft=12, minQ=20,truncQ=2, rm.phix=TRUE,
+              compress=TRUE, multithread=TRUE,matchIDs=TRUE)
+              
+### learn error rates
+errF <- learnErrors(filtFs, multithread=TRUE)
+errR <- learnErrors(filtRs, multithread=TRUE)
+
+## plotErrors(errF, nominalQ=TRUE)
+
+
+## dereplication
+derepFs <- derepFastq(filtFs, verbose=TRUE)
+derepRs <- derepFastq(filtRs, verbose=TRUE)
+
+names(derepFs) <- sample.names
+names(derepRs) <- sample.names
+
+dadaFs <- dada(derepFs, err=errF, multithread=TRUE)
+dadaRs <- dada(derepRs, err=errR, multithread=TRUE)
+
+
+## merge pairs
+mergers <- mergePairs(dadaFs, derepFs, dadaRs, derepRs, verbose=TRUE)
+head(mergers[[1]])
+
+
+#### save this stage
+save(list = ls(all.names = TRUE), file = "dada2.RData", envir = .GlobalEnv)
+
+library(dada2)
+load("/usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/dada2.RData")
+
+seqtab <- makeSequenceTable(mergers)
+table(nchar(getSequences(seqtab)))
+
+## COI is first peak at 365
+seqtab2 <- seqtab[,nchar(colnames(seqtab)) %in% seq(365,365)]
+
+## 18S is peak from 401 to 405
+seqtab3 <- seqtab[,nchar(colnames(seqtab)) %in% seq(402,404)]
+
+
+seqtab.nochim.COI <- removeBimeraDenovo(seqtab2, method="consensus", multithread=TRUE, verbose=TRUE)
+sum(seqtab.nochim.COI)/sum(seqtab2)
+
+getN <- function(x) sum(getUniques(x))
+track <- cbind(out, sapply(dadaFs, getN), sapply(mergers, getN), rowSums(seqtab2), rowSums(seqtab.nochim.COI))
+# If processing a single sample, remove the sapply calls: e.g. replace sapply(dadaFs, getN) with getN(dadaFs)
+colnames(track) <- c("input", "filtered", "denoised", "merged", "tabled", "nonchim")
+rownames(track) <- sample.names
+head(track)
+
+
+
+seqtab.nochim.18S <- removeBimeraDenovo(seqtab3, method="per-sample", multithread=TRUE, verbose=TRUE,minFoldParentOverAbundance = 3)
+sum(seqtab.nochim.18S)/sum(seqtab3)
+
+getN <- function(x) sum(getUniques(x))
+track <- cbind(out, sapply(dadaFs, getN), sapply(mergers, getN), rowSums(seqtab3), rowSums(seqtab.nochim.18S))
+# If processing a single sample, remove the sapply calls: e.g. replace sapply(dadaFs, getN) with getN(dadaFs)
+colnames(track) <- c("input", "filtered", "denoised", "merged", "tabled", "nonchim")
+rownames(track) <- sample.names
+head(track)
+
+### asssign taxonomy
+taxa <- assignTaxonomy(seqtab.nochim.18S, "silva_nr_v132_train_set.fa.gz", multithread=TRUE)
+taxa.print <- taxa
+rownames(taxa.print) <- NULL
+head(taxa.print)
+
+
+
+
+################# PHYLOSEQ START
+library(phyloseq)
+library(ggplot2)
+
+samples.out <- rownames(seqtab.nochim.18S)
+subject <- sapply(strsplit(samples.out, "D"), `[`, 1)
+
+samdf <- data.frame(Subject=subject)
+rownames(samdf) <- samples.out
+
+ps <- phyloseq(otu_table(seqtab.nochim.18S, taxa_are_rows=FALSE), 
+               sample_data(samdf), 
+               tax_table(taxa))
+
+save(ps,file="ps.RData")
+               
+               
+top20 <- names(sort(taxa_sums(ps), decreasing=TRUE))[1:50]
+ps.top20 <- transform_sample_counts(ps, function(OTU) OTU/sum(OTU))
+ps.top20 <- prune_taxa(top20, ps.top20)
+plot_bar(ps.top20, x="Sample", fill="Class") + facet_wrap(~When, scales="free_x")
