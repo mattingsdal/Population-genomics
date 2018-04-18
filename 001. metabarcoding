@@ -1,72 +1,22 @@
-### use VSEARCH @ rognes
 
-# merge paird end
-~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 1_S8_L001_R1_001.fastq -reverse 1_S8_L001_R2_001.fastq -fastq_pctid 80 -fastqout S8.fq
-~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 2_S1_L001_R1_001.fastq -reverse 2_S1_L001_R2_001.fastq -fastq_pctid 80 -fastqout S1.fq
-~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 3_S2_L001_R1_001.fastq -reverse 3_S2_L001_R2_001.fastq -fastq_pctid 80 -fastqout S2.fq
-~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 4_S3_L001_R1_001.fastq -reverse 4_S3_L001_R2_001.fastq -fastq_pctid 80 -fastqout S3.fq
-~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 5_S4_L001_R1_001.fastq -reverse 5_S4_L001_R2_001.fastq -fastq_pctid 80 -fastqout S4.fq
-~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 6_S5_L001_R1_001.fastq -reverse 6_S5_L001_R2_001.fastq -fastq_pctid 80 -fastqout S5.fq
-~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 7_S6_L001_R1_001.fastq -reverse 7_S6_L001_R2_001.fastq -fastq_pctid 80 -fastqout S6.fq
-~/software/usearch10.0.240_i86linux32 -fastq_mergepairs 8_S7_L001_R1_001.fastq -reverse 8_S7_L001_R2_001.fastq -fastq_pctid 80 -fastqout S7.fq
+       
+###########################
+#### JOIN and CUT
+#### https://github.com/pnnl/bernstein-2017-productivity-and-diversity-2/blob/a335610f7223d5b700a664a2aacf6afe221e94a9/analysis/18S_scripts/1_join.sh
+###########################
 
+# Setting up folders
+homedir=/usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22
+input=/usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/fastq
+output=/usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/pipeline_18S
 
-## extract COI AND 18S sequences
-     for i in `seq 1 8`;
-        do
-	grep -B1 -A2 "GCTTGTCTCAAAGATTAAGCC" S${i}.fq | grep -v "^--$" >S${i}_18S.fq
-	grep -B1 -A2 "TGAAC.GT.TA.CC.CC" S${i}.fq | grep -v "^--$" >S${i}_COI.fq
-        done 
-        
-        
-# more 12 bp upstream and downstream in both 
-     for i in `seq 1 8`;
-        do       
- 	~/software/usearch10.0.240_i86linux32 -fastx_truncate S${i}_18S.fq -stripleft 12 -stripright 12 -fastqout S${i}_18S.strip.fq
- 	~/software/usearch10.0.240_i86linux32 -fastx_truncate S${i}_COI.fq -stripleft 12 -stripright 12 -fastqout S${i}_COI.strip.fq
-	done
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-############### VSEARCH
-
-
-
-
-
-        
-#############
-#############	STEP 1
-############# process each paird -end reads
-        
-        
-        
-## loop to pair data, remove 12 up- and dow-, filter and re-replicate
+module load vsearch
 
 THREADS=10
 VSEARCH=/cluster/software/vsearch/bin/vsearch
 
 
+cd $input
 for f in *_R1_*.fastq; do
 
     r=$(sed -e "s/_R1_/_R2_/" <<< "$f")
@@ -80,179 +30,79 @@ for f in *_R1_*.fastq; do
     $VSEARCH --threads $THREADS \
         --fastq_mergepairs $f \
         --reverse $r \
-        --fastq_minovlen 16 \
-        --fastq_maxdiffs 15 \
-        --fastqout $s.merged.fastq \
-        --fastq_eeout
-        
-    # Commands to demultiplex and remove tags and primers                       
-    # using e.g. cutadapt may be added here.  
-
+        --fastq_allowmergestagger \
+        --fastq_minovlen 40 \
+        --fastq_maxdiffs 10 \
+        --fastqout $output/$s.merged.fastq \
+     # Commands to demultiplex and remove tags and primers                       
+     # using e.g. cutadapt may be added here.  
     
-    echo
-    echo Removing 12 bp up and downstream
-    
-    $VSEARCH --fastx_filter $s.merged.fastq --fastq_stripleft 12 --fastq_stripright 12 --fastqout $s.merged.filter.fastq
-
-
-
-####### split into genes
-
-
-    echo
-    echo Calculate quality statistics
-
-    $VSEARCH --threads $THREADS \
-        --fastq_eestats $s.merged.filter.fastq \
-        --output $s.stats
-    echo
-    echo Quality filtering
-
-    $VSEARCH --threads $THREADS \
-        --fastq_filter $s.merged.filter.fastq \
-        --fastq_maxee 0.5 \
-        --fastq_minlen 100 \
-        --fastq_maxlen 600 \
-        --fastq_maxns 0 \
-        --fastaout $s.filtered.fasta \
-        --fasta_width 0
-
-    echo
-    echo Dereplicate at sample level and relabel with sample_n
-
-    $VSEARCH --threads $THREADS \
-        --derep_fulllength $s.filtered.fasta \
-        --strand plus \
-        --output $s.derep.fasta \
-        --sizeout \
-        --uc $s.derep.uc \
-        --relabel $s. \
-        --fasta_width 0
+     $VSEARCH --fastx_filter $output/$s.merged.fastq --fastq_stripleft 12 --fastq_stripright 12 --fastqout $output/$s.merged.filter.fastq
 
 done
 
-#############
-#############	END STEP 1
-#############
+###########################
+#### extract COI and 18S using sequence lengths
+#### COI = 364 and 366
+#### 18S 402-408
+###########################
+
+mkdir 18S
+mkdir COI
+
+for f in `seq 1 8`;
+do
+
+ $VSEARCH --threads $THREADS --fastq_filter $f.merged.filter.fastq --fastq_minlen 364 --fastq_maxlen 366 --fastqout COI/$f.COI.merged.filter.fastq
+ $VSEARCH --threads $THREADS --fastq_filter $f.merged.filter.fastq --fastq_minlen 402 --fastq_maxlen 408 --fastqout 18S/$f.18S.merged.filter.fastq
+
+done
+
+rm *merged.fastq
+
+###########################
+#### FILTER AND LABEL
+###########################
+
+# Setting up folders
+
+for f in `seq 1 8`;
+do
 
 
+# The relabel command is used here to add qiime labels to the fasta headers.
+  vsearch --fastq_filter $f.COI.merged.filter.fastq \
+    --fastaout ${f}_filtered.fasta \
+    --fastq_maxee 0.1 \
+    --relabel site${f}_COI_
 
-#############
-############# END STEP 2, extract COI and 18S RNA
-#############
+echo Copying and compressing
+cat ${f}_filtered.fasta | pigz -c > ${f}_filtered.fasta.gz
 
+done
 
-
-#############
-#############	START STEP 3
-#############
-
-##
-
-# At this point there should be one fasta file for each sample                  
-# It should be quality filtered and dereplicated.                               
-
-echo
-echo ====================================
-echo Processing all samples together
-echo ====================================
-
-echo
-echo Merge all samples
-
-rm -f all.derep.fasta all.nonchimeras.derep.fasta
-cat *.derep.fasta > all.fasta
-
-echo
-echo Dereplicate across samples and remove singletons
-
-$VSEARCH --threads $THREADS \
-    --derep_fulllength all.fasta \
-    --minuniquesize 2 \
-    --sizein \
-    --sizeout \
-    --fasta_width 0 \
-    --uc all.derep.uc \
-    --output all.derep.fasta
-
-echo Unique non-singleton sequences: $(grep -c "^>" all.derep.fasta)
-
-echo
-echo Precluster at 98% before chimera detection
-
-$VSEARCH --threads $THREADS \
-    --cluster_size all.derep.fasta \
-    --id 0.98 \
-    --strand plus \
-    --sizein \
-    --sizeout \
-    --fasta_width 0 \
-    --uc all.preclustered.uc \
-    --centroids all.preclustered.fasta
-
-echo Unique sequences after preclustering: $(grep -c "^>" all.preclustered.fasta)
-
-echo
-echo De novo chimera detection
-
-$VSEARCH --threads $THREADS \
-    --uchime_denovo all.preclustered.fasta \
-    --sizein \
-    --sizeout \
-    --fasta_width 0 \
-    --nonchimeras all.denovo.nonchimeras.fasta \
-
-echo Unique sequences after de novo chimera detection: $(grep -c "^>" all.denovo.nonchimeras.fasta)
-
-echo
-echo Reference chimera detection
-
-$VSEARCH --threads $THREADS \
-    --uchime_ref all.denovo.nonchimeras.fasta \
-    --db $REF \
-    --sizein \
-    --sizeout \
-    --fasta_width 0 \
-    --nonchimeras all.ref.nonchimeras.fasta
-
-echo Unique sequences after reference-based chimera detection: $(grep -c "^>" all.ref.nonchimeras.fasta)
-
-echo
-echo Extract all non-chimeric, non-singleton sequences, dereplicated
-
-$PERL ../map.pl all.derep.fasta all.preclustered.uc all.ref.nonchimeras.fasta > all.nonchimeras.derep.fasta
-
-echo Unique non-chimeric, non-singleton sequences: $(grep -c "^>" all.nonchimeras.derep.fasta)
-
-echo
-echo Extract all non-chimeric, non-singleton sequences in each sample
-
-$PERL ../map.pl all.fasta all.derep.uc all.nonchimeras.derep.fasta > all.nonchimeras.fasta
-
-echo Sum of unique non-chimeric, non-singleton sequences in each sample: $(grep -c "^>" all.nonchimeras.fasta)
-
-echo
-echo Cluster at 97% and relabel with OTU_n, generate OTU table
-
-$VSEARCH --threads $THREADS \
-    --cluster_size all.nonchimeras.fasta \
-    --id 0.97 \
-    --strand plus \
-    --sizein \
-    --sizeout \
-    --fasta_width 0 \
-    --uc all.clustered.uc \
-    --relabel OTU_ \
-    --centroids all.otus.fasta \
-    --otutabout all.otutab.txt
-
-echo
-echo Number of OTUs: $(grep -c "^>" all.otus.fasta)
-
-echo
-echo Done
+rm *fastq
+cat 1_filtered.fasta.gz 2_filtered.fasta.gz 3_filtered.fasta.gz 4_filtered.fasta.gz 5_filtered.fasta.gz 6_filtered.fasta.gz 7_filtered.fasta.gz 8_filtered.fasta.gz >all_filtered.fasta.gz
 
 
+###########################
+#### DEREPLICATE AND CHECK FOR CHIMERAS
+###########################
 
 
+vsearch --derep_fulllength all_filtered.fasta.gz --sizeout \
+--relabel derep_ --minuniquesize 2 \
+--output seqs.derep.mc2.fna --log seqs.derep.mc2.log
 
+vsearch --uchime_denovo seqs.derep.mc2.fna \
+--threads 10 --strand plus --sizein --sizeout \
+--nonchimeras seqs.checked_denovo.fna \
+--log seqs.checked_denovo.log
+
+###########################
+#### CLUSTER
+###########################
+
+vsearch --cluster_smallmem seqs.checked_denovo.fna --threads 10 \
+--id 0.97 --centroids rep_set.fna --log rep_set.log \
+--sizein --xsize --usersort --relabel OTU_
