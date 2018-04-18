@@ -61,7 +61,7 @@ done
 rm *merged.fastq
 
 ###########################
-#### FILTER AND LABEL
+#### FILTER AND LABEL. replicate this for each COI and 18S
 ###########################
 
 # Setting up folders
@@ -71,10 +71,10 @@ do
 
 
 # The relabel command is used here to add qiime labels to the fasta headers.
-  vsearch --fastq_filter $f.COI.merged.filter.fastq \
+  vsearch --fastq_filter $f.18S.merged.filter.fastq \
     --fastaout ${f}_filtered.fasta \
     --fastq_maxee 0.1 \
-    --relabel site${f}_COI_
+    --relabel site${f}_18S_
 
 echo Copying and compressing
 cat ${f}_filtered.fasta | pigz -c > ${f}_filtered.fasta.gz
@@ -106,3 +106,21 @@ vsearch --uchime_denovo seqs.derep.mc2.fna \
 vsearch --cluster_smallmem seqs.checked_denovo.fna --threads 10 \
 --id 0.97 --centroids rep_set.fna --log rep_set.log \
 --sizein --xsize --usersort --relabel OTU_
+
+###########################
+#### ASSIGN SEQUENCES TO CLUSTERS
+###########################
+
+vsearch -usearch_global all_filtered.fasta.gz -db rep_set.fna \
+-strand plus -id 0.97 -uc otu_table.map.uc --otutabout otu_table.map.otu -threads 20
+
+### use rep_set.fna to assign taxonomy
+### download QIIME SILVA FROM 
+### https://www.arb-silva.de/download/archive/qiime/
+
+wget https://www.arb-silva.de/fileadmin/silva_databases/qiime/Silva_132_release.zip
+
+assign_taxonomy.py -i pipeline_18S/18S/rep_set.fna \
+-t SILVA_132_QIIME_release/taxonomy/18S_only/99/consensus_taxonomy_7_levels.txt \
+-r SILVA_132_QIIME_release/rep_set/rep_set_18S_only/99/silva_132_99_18S.fna \
+-o taxonomy_results
