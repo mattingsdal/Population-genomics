@@ -1,0 +1,166 @@
+
+       
+###########################
+#### JOIN and CUT
+#### https://github.com/pnnl/bernstein-2017-productivity-and-diversity-2/blob/a335610f7223d5b700a664a2aacf6afe221e94a9/analysis/18S_scripts/1_join.sh
+###########################
+
+# Setting up folders
+homedir=/usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22
+input=/usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/fastq
+output=/usit/abel/u1/mortema/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/pipeline_18S
+
+module load vsearch
+
+THREADS=10
+VSEARCH=/cluster/software/vsearch/bin/vsearch
+
+
+cd $input
+for f in *_R1_*.fastq; do
+
+    r=$(sed -e "s/_R1_/_R2_/" <<< "$f")
+    s=$(cut -d_ -f1 <<< "$f")
+
+    echo
+    echo ====================================
+    echo Processing sample $s
+    echo ====================================
+
+    $VSEARCH --threads $THREADS \
+        --fastq_mergepairs $f \
+        --reverse $r \
+        --fastq_allowmergestagger \
+        --fastq_minovlen 40 \
+        --fastq_maxdiffs 10 \
+        --fastqout $output/$s.merged.fastq \
+     # Commands to demultiplex and remove tags and primers                       
+     # using e.g. cutadapt may be added here.  
+    
+     $VSEARCH --fastx_filter $output/$s.merged.fastq --fastq_stripleft 12 --fastq_stripright 12 --fastqout $output/$s.merged.filter.fastq
+
+done
+
+###########################
+#### extract COI and 18S using sequence lengths
+#### COI = 364 and 366
+#### 18S 402-408
+###########################
+
+mkdir 18S
+mkdir COI
+
+for f in `seq 1 8`;
+do
+
+ $VSEARCH --threads $THREADS --fastq_filter $f.merged.filter.fastq --fastq_minlen 364 --fastq_maxlen 366 --fastqout COI/$f.COI.merged.filter.fastq
+ $VSEARCH --threads $THREADS --fastq_filter $f.merged.filter.fastq --fastq_minlen 402 --fastq_maxlen 408 --fastqout 18S/$f.18S.merged.filter.fastq
+
+done
+
+rm *merged.fastq
+
+###########################
+#### FILTER AND LABEL. replicate this for each COI and 18S
+###########################
+
+# Setting up folders
+
+for f in `seq 1 8`;
+do
+
+
+# The relabel command is used here to add qiime labels to the fasta headers.
+  vsearch --fastq_filter $f.18S.merged.filter.fastq \
+    --fastaout ${f}_filtered.fasta \
+    --fastq_maxee 0.1 \
+    --relabel site${f}_18S_
+
+echo Copying and compressing
+cat ${f}_filtered.fasta | pigz -c > ${f}_filtered.fasta.gz
+
+done
+
+rm *fastq
+cat 1_filtered.fasta.gz 2_filtered.fasta.gz 3_filtered.fasta.gz 4_filtered.fasta.gz 5_filtered.fasta.gz 6_filtered.fasta.gz 7_filtered.fasta.gz 8_filtered.fasta.gz >all_filtered.fasta.gz
+
+
+###########################
+#### DEREPLICATE AND CHECK FOR CHIMERAS
+###########################
+
+vsearch --threads 10 \
+    --derep_fulllength all_filtered.fasta.gz \
+    --minuniquesize 2 \
+    --sizein \
+    --sizeout \
+    --fasta_width 0 \
+    --uc all.derep.uc \
+    --output all.derep.fasta --relabel_sha1 --relabel_keep
+    
+
+### denovo chimeras
+vsearch --uchime_denovo seqs.derep.mc2.fna \
+--threads 10 --strand plus --sizein --sizeout --fasta_width 0 \
+--nonchimeras seqs.checked_denovo.fna \
+--log seqs.checked_denovo.log 
+
+
+## check denovo removed sequences agains ref chimers
+vsearch --threads 10 \
+    --uchime_ref seqs.checked_denovo.fna \
+    --db ~/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/SILVA_132_QIIME_release/rep_set/rep_set_18S_only/97/silva_132_97_18S.fna \
+    --sizein \
+    --sizeout \
+    --fasta_width 0 \
+    --nonchimeras seqs.checked_denovo_db.fna \
+
+
+####### nonchimeras seqs.checked_denovo_db.fna
+
+### find OTU sequences
+vsearch --cluster_smallmem seqs.checked_denovo.fna --id 0.97 --consout rep_set.fasta --usersort
+awk 'BEGIN{OFS="";ORS="";count=0}{if ($0~/>/){if (NR>1) {print "\n"} print ">" count "\n"; count+=1;} else {print $0;}}' rep_set.fasta > rep_set_relabel.fasta
+
+## asssign sequences back to OTU
+vsearch --usearch_global all_filtered.fasta --db rep_set_relabel.fasta --strand both --id 0.97 --uc map.uc --threads 20
+
+
+## get python script
+wget https://github.com/neufeld/MESaS/raw/master/scripts/mesas-uc2clust
+
+
+python mesas-uc2clust map.uc seq_otus.txt
+module load mothur
+
+assign_taxonomy.py -i rep_set_relabel.fasta \
+-t ~/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/SILVA_132_QIIME_release/taxonomy/18S_only/99/taxonomy_7_levels.txt \
+-r ~/projects/slettan2/180406_M01132.Project_Slettan-amplicon1-2018-02-22/SILVA_132_QIIME_release/rep_set/rep_set_18S_only/99/silva_132_99_18S.fna \
+-o tax/
+
+
+## make otu and tax biom
+make_otu_table.py -i seq_otus.txt -t tax/rep_set_relabel_tax_assignments.txt -o otu_table.biom
+
+## adjust for differences in read abundance
+single_rarefaction.py -i otu_table.biom -d 300000 -o rare_otu_table.biom
+
+### rare_otu_table.biom.. import this in phyloseq
+
+R
+library(phyloseq)
+res=import_biom("rare_otu_table.biom")
+
+rank_names(rich_sparse)
+
+par(mfrow=c(2,1))
+
+plot_bar(res,fill="Rank6",title="all taxa")
+
+top20 <- names(sort(taxa_sums(res), decreasing=TRUE))[1:50]
+ps.top20 <- transform_sample_counts(res, function(OTU) OTU/sum(OTU))
+ps.top20 <- prune_taxa(top20, ps.top20)
+plot_bar(ps.top20,fill="Rank6",title="Top 50 OTU")
+
+
+
