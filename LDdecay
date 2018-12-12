@@ -1,0 +1,22 @@
+####### LD decay
+
+
+~/software/plink --vcf freebayes.SNPs.Q40.DP4_30_max_miss_5.AA.MAC3.THIN10k.SORT.vcf --out south --r2 --ld-window 999999 --ld-window-kb 8000 --ld-window-r2 0  --allow-extra-chr
+~/software/plink --vcf freebayes.SNPs.Q40.DP4_30_max_miss_5.AA.MAC3.THIN10k.SORT.vcf --out west --r2 --ld-window 999999 --ld-window-kb 8000 --ld-window-r2 0 --allow-extra-chr
+
+awk 'NR == 1 { $8 = "diff." } NR >= 3 { $8 = $5 - $2 } 1' <south.ld | awk '{print $8"\t"$7}' >south.ld.decay
+awk 'NR == 1 { $8 = "diff." } NR >= 3 { $8 = $5 - $2 } 1' <west.ld | awk '{print $8"\t"$7}' >west.ld.decay
+
+R
+south=read.table("south.ld.decay",sep="\t",header=T)
+west=read.table("west.ld.decay",sep="\t",header=T)
+
+tiff("LD_decay_south.tiff",width = 960, height = 960)
+plot(south[,1],south[,2],cex=0.2,xlim=c(0,5000000),main="southern corkwing",xlab="physical distance",ylab="LD, r2")
+lines(lowess(south),col="red",lwd=2)
+dev.off()
+
+tiff("LD_decay_west.tiff",width = 960, height = 960)
+plot(west[,1],west[,2],cex=0.2,xlim=c(0,5000000),main="western corkwing",xlab="physical distance",ylab="LD, r2")
+lines(lowess(west),col="red",lwd=2)
+dev.off()
