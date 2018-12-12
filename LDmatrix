@@ -1,0 +1,17 @@
+~/software/plink --vcf freebayes.SNPs.Q40.DP4_30_max_miss_5.AA.MAC3.THIN10k.SORT.vcf --keep nor.plink --bp-space 50000 --make-bed --out test --allow-extra-chr
+~/software/plink --bfile test --keep south.plink --r2 square0 --out south --allow-extra-chr
+~/software/plink --bfile test --keep west.plink --r2 square0 --out west --allow-extra-chr
+sed -i 's/nan/0/g' south.ld
+sed -i 's/nan/0/g' west.ld   
+
+R
+setwd("C:/Users/mortenma/Desktop/supp mat paper 2/Fst and Tajmia's D/REVISION")
+SOUTH=round(read.table("south.ld",sep="\t"),2)
+WEST=round(read.table("west.ld",sep="\t"),2)
+
+BOTH=SOUTH+t(WEST)
+diag(BOTH)=1
+
+tiff("BOTH.tiff",width = 14240, height = 14240)
+image(as.matrix(1-BOTH[1:11958,1:11958]),axes=T)
+dev.off()
