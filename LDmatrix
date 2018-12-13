@@ -1,27 +1,46 @@
-~/software/plink --vcf freebayes.SNPs.Q40.DP4_30_max_miss_5.AA.MAC3.THIN10k.SORT.vcf --keep nor.plink --bp-space 50000 --make-bed --out test --allow-extra-chr
-~/software/plink --bfile test --keep south.plink --r2 square0 --allow-extra-chr --out south.square
-~/software/plink --bfile test --keep west.plink --r2 square0 --allow-extra-chr --out west.square
-sed -i 's/nan/0/g' west.square.ld
-sed -i 's/nan/0/g' south.square.ld
+~/software/plink --vcf freebayes.SNPs.Q40.DP4_30_max_miss_5.AA.MAC3.THIN10k.SORT.vcf --bp-space 50000 --make-bed --out test --allow-extra-chr
+
+~/software/plink --bfile test --r2 square0 --keep south.plink  --allow-extra-chr
+~/software/plink --bfile test --r2 square0 --keep west.plink  --allow-extra-chr
+~/software/plink --bfile test --r2 square0 --keep ard.plink  --allow-extra-chr
+
+sed -i 's/nan/0/g' south.ld
+sed -i 's/nan/0/g' west.ld  
+sed -i 's/nan/0/g' ard.ld  
 
 
 R
+setwd(C:/Users/mortenma/Desktop/supp mat paper 2/Fst and Tajmia's D/REVISION)
+SOUTH=round(read.table("south.ld",sep="\t"),2)
+WEST=round(read.table("west.ld",sep="\t"),2)
+ARD=round(read.table("ard.ld",sep="\t"),2)
+bim=read.table("test.bim",sep="\t",header=F)
 
-setwd("C:/Users/mortenma/Desktop")
+SW=SOUTH+t(WEST)
+diag(SW)=1
 
-tmp=read.table("south.square.ld",sep="\t",header=F)
-SOUTH=round(tmp,2)
-rm(tmp)
+AW=ARD+t(WEST)
+diag(AW)=1
 
-tmp=read.table("west.square.ld",sep="\t",header=F)
-WEST=round(tmp,2)
-rm(tmp)
-
-BOTH=SOUTH+t(WEST)
-diag(BOTH)=1
+AS=ARD+t(SOUTH)
+diag(AS)=1
 
 
-## do this for all three comparisons
-tiff("ld.tiff",width = 7644, height = 7644,res=300)
-image(as.matrix(1-BOTH[1:3822,1:3822]),xlab="SOUTH",ylab="WEST")
+
+borders=c(0,100,174,232,281,340,392,439,481,524,567,609,651,693,733,771,809,846,881,916,952,988)
+borders2=borders/1000
+navn=as.character(unique(bim[,1]))
+
+tiff("SOUTH_ARD_LD_large.tiff",width = 2000, height = 2000)
+image(as.matrix(1-AS[1:1000,1:1000]),axes=F)
+text(0.25,0.75,"southern Scandinavia",cex=5)
+text(0.75,0.25,"British Isles",cex=5)
+#text(0.75,0.25,"British Isles")
+
+
+for (i in 1:length(borders)){
+segments(borders2[i], 0,borders2[i],1,lwd=0.1,col="gray")
+segments(0,borders2[i], 1,borders2[i],lwd=0.1,col="gray")
+text(borders2[i]+0.02,borders2[i]+0.02,navn[i],cex=1)
+}
 dev.off()
