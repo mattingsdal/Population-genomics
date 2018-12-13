@@ -13,10 +13,10 @@ west=read.table("west.ld.decay",sep="\t",header=T)
 
 tiff("LD_decay_south.tiff",width = 960, height = 960)
 plot(south[,1],south[,2],cex=0.2,xlim=c(0,5000000),main="southern corkwing",xlab="physical distance",ylab="LD, r2")
-lines(lowess(south),col="red",lwd=2)
+lines(smooth.spline(south),col="blue")
 dev.off()
 
 tiff("LD_decay_west.tiff",width = 960, height = 960)
 plot(west[,1],west[,2],cex=0.2,xlim=c(0,5000000),main="western corkwing",xlab="physical distance",ylab="LD, r2")
-lines(lowess(west),col="red",lwd=2)
+lines(smooth.spline(west),col="blue")
 dev.off()
