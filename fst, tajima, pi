@@ -33,13 +33,14 @@ la=ifelse(fst[,1]=="SYMME_00023269",1,la)
 la2=ifelse(fst[,1]=="SYMME_00000084",3,1)
 la2=ifelse(fst[,1]=="SYMME_00023319",3,la2)
 
+color_fst=la+la2
 
 
 plot(fst[,6],ylim=c(0,1),ylab="Fst, West vs South",axes=FALSE,cex=0.7,pch=19
 
 ## plot
 par(mfrow=c(5,1),mar=c(1, 5, 0, 0)) 
-plot(fst[,6],ylim=c(0,1),ylab="Fst, West vs South",axes=FALSE,cex=0.7,pch=19,col=la+la2)
+plot(fst[,6],ylim=c(0,1),ylab="Fst, West vs South",axes=FALSE,cex=0.7,pch=19,col=color_fst)
 Axis(side=2, labels=T)
 plot(d_west[,4],ylim=c(-2,3),ylab="Tajima's D, West",axes=FALSE,cex=0.7,pch=19,col=la+la2)
 Axis(side=2, labels=T)
