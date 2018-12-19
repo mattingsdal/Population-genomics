@@ -41,7 +41,7 @@ plot(fst[,6],ylim=c(0,1),ylab="Fst, West vs South",axes=FALSE,cex=0.7,pch=19
 par(mfrow=c(5,1),mar=c(1, 5, 0, 0)) 
 plot(fst[,6],ylim=c(0,1),ylab="Fst, West vs South",axes=FALSE,cex=0.7,pch=19,col=la+la2)
 Axis(side=2, labels=T)
-plot(d_west[,4],ylim=c(-2,3),ylab="Tajima's D, West",axes=FALSE,cex=0.7,pch=19,col=la+la2))
+plot(d_west[,4],ylim=c(-2,3),ylab="Tajima's D, West",axes=FALSE,cex=0.7,pch=19,col=la+la2)
 Axis(side=2, labels=T)
 plot(d_south[,4],ylim=c(-2,3),ylab="Tajima's D, South",axes=FALSE,cex=0.7,pch=19,col=la+la2)
 Axis(side=2, labels=T)
