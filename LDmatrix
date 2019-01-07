@@ -31,8 +31,8 @@ borders=c(0,100,174,232,281,340,392,439,481,524,567,609,651,693,733,771,809,846,
 borders2=borders/1000
 navn=as.character(unique(bim[,1]))
 
-tiff("SOUTH_ARD_LD_large.tiff",width = 2000, height = 2000)
-image(as.matrix(1-AS[1:1000,1:1000]),axes=F)
+tiff("SOUTH_WEST_LD_large.tiff",width = 2000, height = 2000)
+image(as.matrix(1-SW[1:1000,1:1000]),axes=F)
 text(0.25,0.75,"southern Scandinavia",cex=5)
 text(0.75,0.25,"British Isles",cex=5)
 #text(0.75,0.25,"British Isles")
