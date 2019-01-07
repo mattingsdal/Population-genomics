@@ -4,10 +4,6 @@
 ~/software/plink --bfile test --r2 square0 --keep west.plink  --allow-extra-chr
 ~/software/plink --bfile test --r2 square0 --keep ard.plink  --allow-extra-chr
 
-sed -i 's/nan/0/g' south.ld
-sed -i 's/nan/0/g' west.ld  
-sed -i 's/nan/0/g' ard.ld  
-
 
 R
 setwd(C:/Users/mortenma/Desktop/supp mat paper 2/Fst and Tajmia's D/REVISION)
@@ -37,11 +33,41 @@ image(as.matrix(1-SW[1:1000,1:1000]),axes=F)
 text(0.25,0.75,"western Scandinavia",cex=5)
 text(0.75,0.25,"southern Scandinavia",cex=5)
 #text(0.75,0.25,"British Isles")
-
-
 for (i in 1:length(borders)){
 segments(borders2[i], 0,borders2[i],1,lwd=0.1,col="black")
 segments(0,borders2[i], 1,borders2[i],lwd=0.1,col="black")
 text(borders2[i]+0.02,borders2[i]+0.02,navn[i],cex=1)
 }
 dev.off()
+
+
+
+
+tiff("SOUTH_ARD_LD_large.tiff",width = 2000, height = 2000)
+par(bg="gray90")
+image(as.matrix(1-AS[1:1000,1:1000]),axes=F)
+text(0.25,0.75,"southern Scandinavia",cex=5)
+text(0.75,0.25,"British Isles",cex=5)
+for (i in 1:length(borders)){
+segments(borders2[i], 0,borders2[i],1,lwd=0.1,col="black")
+segments(0,borders2[i], 1,borders2[i],lwd=0.1,col="black")
+text(borders2[i]+0.02,borders2[i]+0.02,navn[i],cex=1)
+}
+dev.off()
+
+
+
+tiff("WEST_ARD_LD_large.tiff",width = 2000, height = 2000)
+par(bg="gray90")
+image(as.matrix(1-AW[1:1000,1:1000]),axes=F)
+text(0.25,0.75,"western Scandinavia",cex=5)
+text(0.75,0.25,"British Isles",cex=5)
+for (i in 1:length(borders)){
+segments(borders2[i], 0,borders2[i],1,lwd=0.1,col="black")
+segments(0,borders2[i], 1,borders2[i],lwd=0.1,col="black")
+text(borders2[i]+0.02,borders2[i]+0.02,navn[i],cex=1)
+}
+dev.off()
+
+
+
