@@ -1,0 +1,19 @@
+### code to intersect busco genes to that of snps in dadi
+### uses the "full_table_SAMPLE.tsv" retuned by BUSCO
+
+module load bedtools
+
+# genes contain busco coordinates from full_table_SAMPLE.tsv
+awk -F'\t' '{print $3" "$4" "$5}' full_table_SAMPLE.tsv >genes
+
+# extract snp coordnaites from your dadi data
+awk '{print $9"\t"$10"\t"$10+1}' west.ard.dadi.data | sed 1d >snps
+
+# intersect using bedtools
+bedtools intersect -a snps -b genes | sed 's/\t/ /g' >out
+
+#match column 2 in out to that of column 10 in data. assumes unique snp posistions
+awk -F' ' 'NR==FNR{c[$2]++;next};c[$10] > 0' out west.ard.dadi.data  > west.ard.dadi.BUSCO.data
+
+
+
