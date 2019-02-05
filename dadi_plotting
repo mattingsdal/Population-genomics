@@ -1,0 +1,37 @@
+#plot emirical data
+~/miniconda2/bin/python2
+import numpy 
+import dadi
+import pylab
+dd = dadi.Misc.make_data_dict('west.ard.dadi.BUSCO2.data')
+data = dadi.Spectrum.from_data_dict(dd, ['west','ard'], [48,14], polarized=False)
+data14=data.project([14,14])
+
+pylab.figure()
+dadi.Plotting.plot_single_2d_sfs(data14,vmin=1, vmax=1000)
+pylab.show()
+
+
+
+# plot resuduals and fitted models
+~/miniconda2/bin/python2
+import numpy 
+import dadi
+import pylab
+import Models_2D
+from numpy import array
+
+data = dadi.Spectrum.from_file('south.west.dadi.BUSCO2.fs')
+# give params of your best model
+params=array([0.3107,0.2605,16.1318,4.6673])
+pts = [20,30,40]
+ns = data.sample_sizes
+# specify your model
+func = Models_2D.sym_mig
+func_ex = dadi.Numerics.make_extrap_log_func(func)
+func_ex = dadi.Numerics.make_extrap_func(func)
+
+model = func_ex(params, ns, pts)
+
+pylab.figure()
+dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=3,pop_ids =('YRI','CEU'))
