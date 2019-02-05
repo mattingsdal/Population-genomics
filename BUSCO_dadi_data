@@ -3,17 +3,50 @@
 
 module load bedtools
 
-# genes contain busco coordinates from full_table_SAMPLE.tsv
-awk -F'\t' '{print $3" "$4" "$5}' full_table_SAMPLE.tsv >genes
+# genes contain busco coordinates
+
+awk -F'\t' '{if($2=="Complete") print $0}' full_table_corkwing.tsv>tmp
+
+## expant in 10 kbp in either direction
+awk -F'\t' '{print $3"\t"$4"\t"$5}' tmp >genes
+
+# replace negative posisitons with zero
+awk -F'\t' '$2<0 {$2=0} 1' genes | sed 's/ /\t/g' >genes2
 
 # extract snp coordnaites from your dadi data
 awk '{print $9"\t"$10"\t"$10+1}' west.ard.dadi.data | sed 1d >snps
 
 # intersect using bedtools
-bedtools intersect -a snps -b genes | sed 's/\t/ /g' >out
+bedtools intersect -a snps -b /cluster/home/mortema/run_corkwing/genes | sed 's/\t/ /g' >out
 
-#match column 2 in out to that of column 10 in data. assumes unique snp posistions
+#match column 2 in out to that of column 10 in data. assumed unique snp posistions
 awk -F' ' 'NR==FNR{c[$2]++;next};c[$10] > 0' out west.ard.dadi.data  > west.ard.dadi.BUSCO.data
+
+# copy header
+sed -n 1p west.ard.dadi.data >header
+
+# make ready
+
+cat header west.ard.dadi.BUSCO.data >west.ard.dadi.BUSCO2.data
+
+## read data and make SFS
+~/miniconda2/bin/python2
+
+import numpy 
+import dadi
+import pylab
+dd = dadi.Misc.make_data_dict('west.ard.dadi.BUSCO2.data')
+data = dadi.Spectrum.from_data_dict(dd, ['west','ard'], [48,14], polarized=False)
+
+data14=data.project([14,14])
+
+data14.to_file('west.ard.dadi.BUSCO2.fs')
+
+pylab.figure()
+dadi.Plotting.plot_single_2d_sfs(data14,vmin=1, vmax=1000)
+pylab.show()
+
+
 
 
 
