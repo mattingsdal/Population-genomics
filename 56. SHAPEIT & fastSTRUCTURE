@@ -1,0 +1,17 @@
+SYMME_00023145
+
+## all snps
+~/software/plink --vcf freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.MAC3.sort.vcf --chr SYMME_00023145 --make-bed --out SYMME_00023145 --allow-extra-chr
+
+## phase and impute
+module load shapeit
+shapeit -T 2 --input-bed SYMME_00023145.bed SYMME_00023145.bim SYMME_00023145.fam --output-max SYMME_00023145.phased.haps SYMME_00023145.phased.sample
+# convert from hap to phase
+
+./impute2chromopainter.pl SYMME_00023145.phased.haps SYMME_00023145.paint
+# make empty recomb file
+
+./makeuniformrecfile.pl SYMME_00023145.paint.phase SYMME_00023145.paint.phase.rec
+
+#### fineSTRUCTURE
+/usit/abel/u1/mortema/software/fs_4.0.1/fs_linux_glibc2.3 SYMME_00023145.cp -idfile id_file -phasefiles SYMME_00023145.paint.phase  -recombfiles SYMME_00023145.paint.phase.rec -go -v -numthreads 8
