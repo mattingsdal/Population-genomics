@@ -1,0 +1,34 @@
+
+### sort by desired order
+~/software/plink --vcf freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.MAC3.recode.vcf --indiv-sort f my_order --make-bed --out freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.MAC3.recode.my_order --allow-extra-chr
+
+
+# SYMME_00023145
+# SYMME_00000053
+# SYMME_00000084
+
+~/software/plink --bfile freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.MAC3.recode.my_order --make-bed --chr SYMME_00023145 --out SYMME_00023145 --allow-extra-chr
+
+module load shapeit
+shapeit -T 2 --input-bed SYMME_00023145.bed SYMME_00023145.bim SYMME_00023145.fam --output-max SYMME_00023145.phased.haps SYMME_00023145.phased.sample
+
+./impute2chromopainter.pl -f -v1 SYMME_00023145.phased.haps SYMME_00023145.paint
+
+./makeuniformrecfile.pl SYMME_00023145.paint.phase SYMME_00023145.paint.phase.rec
+
+chromopainter -in -a 0 0 -g SYMME_00023145.paint.phase -r SYMME_00023145.paint.phase.rec -o paint/SYMME_00023145
+
+./neaverage.pl -o Ne paint/SYMME_00023145.EMprobs.out
+
+Ne = 3076.9230769231
+mu = 0.000716912600000001
+
+
+
+## donor list
+ard 14
+sm 16	
+gf 20
+
+chromopainter -i 20 -f donor -n 3076.9230769231 -M 0.000716912600000001 -g SYMME_00023145.paint.phase -r SYMME_00023145.paint.phase.rec -o paint/SYMME_00023145_rec 
+
