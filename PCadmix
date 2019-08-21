@@ -1,0 +1,48 @@
+## impute and phase vcf file
+java -Xmx2g -jar beagle.15Aug19.395.jar gt=N50.recode.vcf imp-segment=0.1 out=test nthreads=6
+
+## unzip
+gunzip test2.vcf.bgl.gz
+
+# make pop subsets
+grep 'NH\|SM' freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.MAC3.THIN10k.sort.fam | awk '{print $1}' >w.keep
+grep 'ST\|EG' freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.MAC3.THIN10k.sort.fam | awk '{print $1}' >admix.keep
+grep 'GF\|TV\|AR[0-9]' freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.MAC3.THIN10k.sort.fam | awk '{print $1}' >s.keep
+grep 'ARD' freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.MAC3.THIN10k.sort.fam | awk '{print $1}' >ard.keep
+
+
+## for each contig
+cat ../contigs_N50 | while read line
+do
+vcftools --vcf test.vcf --chr $line --keep w.keep --recode --out pcadmix/data/W_$line
+vcftools --vcf test.vcf --chr $line --keep s.keep --recode --out pcadmix/data/S_$line
+vcftools --vcf test.vcf --chr $line --keep admix.keep --recode --out pcadmix/data/admix_$line
+vcftools --vcf test.vcf --chr $line --keep ard.keep --recode --out pcadmix/data/ard_$line
+done
+
+
+# convert to beagle 3 format
+
+cat contigs_N50 | while read line
+do
+
+cat W_$line.recode.vcf | java -jar vcf2beagle.jar m W_$line.pcadmix
+cat S_$line.recode.vcf | java -jar vcf2beagle.jar m S_$line.pcadmix
+cat admix_$line.recode.vcf | java -jar vcf2beagle.jar m admix_$line.pcadmix
+cat ard_$line.recode.vcf | java -jar vcf2beagle.jar m ard_$line.pcadmix
+done
+
+#unzip
+gunzip *pcadmix.bgl*
+
+# make snp map maps
+cat contigs_N50 | while read line
+do
+awk '{print $1"\t"$3"\t"0"\t"$2}' admix_$line.recode.vcf | sed '/#/d' >$line.map
+done
+
+# do PCadmix
+cat contigs_N50 | while read line
+do
+~/software/PCAdmix/PCAdmix3_linux -anc S_$line.pcadmix.bgl W_$line.pcadmix.bgl -adm admix_$line.pcadmix.bgl -map $line.map -wMb 0.01 -o $line
+done
