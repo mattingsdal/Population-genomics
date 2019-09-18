@@ -39,6 +39,6 @@ vcftools --vcf SNP_renamed.vcf --snps keep.aa.snps --recode --out SNP_name_withA
 
 
 ### export vcf with AA as REF allele
-~/software/plink2 --vcf SNP_name_withAA.recode.vcf --ref-allele ref.aa.snps 2 1 --export vcf --out $vcf.withAA.vcf --allow-extra-chr
+~/software/plink2 --vcf SNP_name_withAA.recode.vcf --ref-allele force ref.aa.snps 2 1 --export vcf --out $vcf.withAA --allow-extra-chr
 
 
