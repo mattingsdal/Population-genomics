@@ -1,99 +1,44 @@
- 
+lastdir=/usit/abel/u1/mortema/software/last-77d8757028c2/bin
+samdir=/usit/abel/u1/mortema/software/samtools-1.7
+picarddir=/usit/abel/u1/mortema/software
+vcf=freebayes.SNPs.min8_max80.mac2.recode.vcf
+fasta1=Zmarina_Olsen.fasta
+fasta2=Zmu_v1_scaffolds.fasta
 
-### pairwise genome alignment using LAST
+### use NEAR for short and similar, use YASS for more diverged DNA
+$lastdir/lastdb8 -uYASS -R11 -P10 -c $fasta1.db8 $fasta1
 
- 
-
-## index
-./lastdb8 -uNEAR -R11 ~/MAKER/Symphodus_melops.db8 ~/MAKER/Symphodus_melops.fasta
-
-
- 
-
-cd bin
-module load gcc
-module load gnu_parallel
-
-
-# run last in parallel
-~/software/last-77d8757028c2/bin/parallel-fasta "~/software/last-77d8757028c2/bin/lastal -m 100 -E 0.05 Symphodus_melops.db | ~/software/last-77d8757028c2/bin/last-split -m1" < berggylt_V1.fasta > out.maf
+## do last
+$lastdir/parallel-fasta "${lastdir}/lastal8 -m 100 -E 0.05  $fasta1.db8 | $lastdir/last-split8 -m1" < $fasta2 > out.maf
 renice -n 5 -u mortema
 
-#  make 1 - 1 and swap alignment 
-~/software/last-77d8757028c2/bin/maf-swap out.maf | last-split -m1 > out20.maf
-~/software/last-77d8757028c2/bin/maf-swap out20.maf >out30.maf
+#
+$lastdir/maf-swap out.maf | $lastdir/last-split8 -s100 > out20.maf
+$lastdir/maf-swap out20.maf >out30.maf
 
- 
-# add header
-~/software/last-77d8757028c2/bin/maf-convert sam out30.maf -f Symphodus_melops.dict ­r 'ID:1 PL:ILLUMINA SM:ballan' > tmp.sam
+java -jar $picarddir/picard.jar CreateSequenceDictionary R=$fasta1 O=$fasta1.dict
+$lastdir/maf-convert sam out30.maf -f $fasta1.dict ¬r 'ID:1 PL:ILLUMINA SM:zostera' > tmp.sam
 
-## add info and sort
-~/software/samtools-1.7/samtools view -bt Symphodus_melops.fasta.fai tmp.sam -o out30.bam
-~/software/samtools-1.7/samtools sort -o out30.sorted.bam out30.bam
-~/software/samtools-1.7/samtools index out30.sorted.bam
+$samdir/samtools faidx $fasta1
+$samdir/samtools view -bt $fasta1.fai tmp.sam -o out30.bam
+$samdir/samtools sort -o out30.sorted.bam out30.bam
+$samdir/samtools index out30.sorted.bam
 
-# call alleles. The pipe may need to split up 
-~/software/samtools-1.7/samtools mpileup -ugf Symphodus_melops.fasta -l ../vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.vcf.gz out30.sorted.bam | /usit/abel/u1/mortema/software/bcftools-1.6/bcftools call -m - |/usit/abel/u1/mortema/software/bcftools-1.6/bcftools view -Oz -o test.vcf.gz
-/usit/abel/u1/mortema/software/bcftools-1.6/bcftools index test.vcf.gz
- 
-# index alleles
-bcftools index test.vcf.gz
+$samdir/samtools mpileup -ugf $fasta1 -l $vcf out30.sorted.bam | /usit/abel/u1/mortema/software/bcftools-1.6/bcftools call -m - |/usit/abel/u1/mortema/software/bcftools-1.6/bcftools view -Oz -o test.vcf.gz
+gunzip test.vcf.gz
 
-/usit/abel/u1/mortema/software/bcftools-1.6/bcftools index merged.vcf.gz
-bcftools view -m2 -M2 -v snps -s out30.sorted.bam merged.vcf.gz | bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n' | awk '{OFS="\t";if($5=="0/0"){print $1,$2,$3,$4,$3} if($5=="0/1"){print $1,$2,$3,$4,$4}}' > aa.yass.tab
+# SNP names
+cat $vcf | perl -lane 'if($F[0] !~ /^#/) {$F[2] = $F[0]."_".$F[1];print join("\t",@F);} else {print $_;}' > SNP_renamed.vcf
+cat test.vcf | perl -lane 'if($F[0] !~ /^#/) {$F[2] = $F[0]."_".$F[1];print join("\t",@F);} else {print $_;}' > SNP_renamed2.vcf
 
-bgzip aa.yass.tab
-tabix -s1 -b2 -e2 aa.yass.tab.gz
+## remove posistions with conflict
 
-echo '##INFO=<ID=AA,Number=1,Type=Character,Description="Ancestral allele">' > hdr.txt
-bcftools annotate -a aa.yass.tab.gz -c CHROM,POS,REF,ALT,INFO/AA -h hdr.txt -Oz -o data101_goodAA.vcf.gz merged.vcf.gz
-
-## merge
-/usit/abel/u1/mortema/software/bcftools-1.6/bcftools merge ../vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.vcf.gz test.vcf.gz -Oz -o merged.vcf.gz
-/usit/abel/u1/mortema/software/bcftools-1.6/bcftools index merged.vcf.gz
-
-# 1/1 is maching alt allele, 0/0 is maching ref allele, 0/1 is present in aligmnet but missmatch, ./. is missing
-/usit/abel/u1/mortema/software/bcftools-1.6/bcftools view -s out30.sorted.bam test.vcf.gz | bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n' | awk '{OFS="\t";if($5=="0/0"){print $1,$2,$3,$4,$3,$5} if($5=="1/1"){print $1,$2,$3,$4,$4,$5}}' >aa.yass.tab
-# annotate vcf file
-echo '##INFO=<ID=AA,Number=1,Type=Character,Description="Ancestral allele">' > hdr.txt
-bcftools annotate -a aa.yass.tab.gz -c CHROM,POS,REF,ALT,INFO/AA -h hdr.txt -Oz -o data101_goodAA.vcf.gz merged.vcf.gz
-
-# 0/0 matching ref snps, 1/1 matching minor, ./. missing
-/usit/abel/u1/mortema/software/bcftools-1.6/bcftools index merged.vcf.gz
-bcftools view -m2 -M2 -v snps -s out30.sorted.bam merged.vcf.gz | bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n' | awk '{OFS="\t";if($5=="0/0"){print $1,$2,$3,$4,$3} if($5=="1/1"){print $1,$2,$3,$4,$4}}' > aa.yass.tab
-
-# annotate
-bgzip aa.yass.tab
-tabix -s1 -b2 -e2 aa.yass.tab.gz
-echo '##INFO=<ID=AA,Number=1,Type=Character,Description="Ancestral allele">' > hdr.txt
-bcftools annotate -a aa.yass.tab.gz -c CHROM,POS,REF,ALT,INFO/AA -h hdr.txt -Oz -o goodAA.vcf.gz merged.vcf.gz
-
-# remove SNPs which does not have AA state
-bcftools view -m2 -M2 -v snps -e 'INFO/AA=="."' goodAA.vcf.gz -Oz -o only_AA.vcf.gz
-
-## prepare file to make ancestral ellele to referance allele
-awk '{print $3"\t"$4"\t"$5"\t"$8}' only_AA.vcf >la
-grep SYMME la>la2
-awk -F";" '{print $NF}' la2 | sed 's/AA=//g' >aa
-paste la2 aa >la3
-awk '{print $1"\t"$2"\t"$3"\t"$5}' la3 >aa_info
+awk '{if($5==".") print $0}' SNP_renamed2.vcf | awk '{print $3}' >keep.aa.snps
+awk '{if($5==".") print $0}' SNP_renamed2.vcf | awk '{print $3"\t"$4}' >ref.aa.snps
+vcftools --vcf SNP_renamed.vcf --snps keep.aa.snps --recode --out SNP_name_withAA
 
 
-~/software/plink --vcf only_AA.vcf --a2-allele aa_info 4 1 --recode-vcf --out test --allow-extra-chr --const-fid removeme
-# remove sample contianing aligmnet info
-vcftools --vcf test.vcf --remove-indv removeme_out30.sorted.bam --recode --out test2
-
-# correclt plinks FID
-sed 's/removeme_//g' test.vcf >../vcf/freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf
-
-bgzip -c freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf > freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf.gz
-tabix -p vcf freebayes.ALL.VAR.Q40.DP4_30_max_miss_5.recode.edit.annotated.names.SNPs.AA.vcf.gz
-
-
-
-
- 
-
-
+### export vcf with AA as REF allele
+~/software/plink2 --vcf SNP_name_withAA.recode.vcf --ref-allele ref.aa.snps 2 1 --export vcf --out $vcf.withAA.vcf --allow-extra-chr
 
 
