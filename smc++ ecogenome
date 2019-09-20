@@ -1,0 +1,110 @@
+# ZOS-198 ZOS-188 ZOS-197 ZOS-202 ZOS-161 ZOS-166 ZOS-119 ZOS-128 ZOS-112 ZOS-171 ZOS-127 ZOS-169 ZOS-348 ZOS-351 ZOS-352 ZOS-255
+
+
+## ZOS-348 = Hvaler
+## ZOS-352 = Hvaler
+## ZOS-351 = Hvaler
+## ZOS-255 = Hvaler
+
+### vcf file must be bzip and tabix
+### remeber to clean the contig file with dos2unix
+
+
+# ZOS-112 = Sogne
+# ZOS-171 = Sogne
+# ZOS-127 = Sogne
+# ZOS-169 = Sogne
+
+
+#remember to remove odd symbols from contig names, bgzip and tabix
+sed -i 's/|//g' freebayes.SNPs.min8_max80.mac2.recode.vcf.withAA.recode.vcf
+bgzip freebayes.SNPs.min8_max80.mac2.recode.vcf.withAA.recode.vcf
+tabix -p vcf freebayes.SNPs.min8_max80.mac2.recode.vcf.withAA.recode.vcf.gz
+
+vcf=freebayes.SNPs.min8_max80.mac2.recode.vcf.withAA.recode.vcf.gz
+
+#hvaler
+while read line;do
+for pop in ZOS-348 ZOS-352 ZOS-351 ZOS-255;do
+~/miniconda3/bin/smc++ vcf2smc -d $pop $pop $vcf hvaler_aa/${pop}_${line}.smc.gz $line South:ZOS-198,ZOS-188,ZOS-197,ZOS-202,ZOS-161,ZOS-166,ZOS-119,ZOS-128,ZOS-112,ZOS-171,ZOS-127,ZOS-169,ZOS-348,ZOS-351,ZOS-352,ZOS-255;done
+done < Zmarina_contigs_N50_mod.txt
+ 
+
+#sogne
+
+
+while read line;do
+for pop in ZOS-112 ZOS-171 ZOS-127 ZOS-169;do
+~/miniconda3/bin/smc++ vcf2smc -d $pop $pop $vcf sogne_aa/${pop}_${line}.smc.gz $line South:ZOS-198,ZOS-188,ZOS-197,ZOS-202,ZOS-161,ZOS-166,ZOS-119,ZOS-128,ZOS-112,ZOS-171,ZOS-127,ZOS-169,ZOS-348,ZOS-351,ZOS-352,ZOS-255;done
+done < Zmarina_contigs_N50_mod.txt
+
+
+
+
+
+
+
+~/miniconda3/bin/smc++ cv -o hvaler_aa/ --cores 2 --unfold --folds 4 --timepoints 10 100000 --thinning 50 1e-8 hvaler_aa/*gz
+~/miniconda3/bin/smc++ cv -o sogne_aa/ --cores 2 --unfold --folds 4 --timepoints 10 100000 --thinning 50 1e-8 sogne_aa/*gz
+
+
+
+~/miniconda3/bin/smc++ plot hvaler_aa.pdf hvaler_aa/model.final.json
+~/miniconda3/bin/smc++ plot sogne_aa.pdf sogne_aa/model.final.json
+
+#####################################################################
+#####################################################################
+### PIPEFISH
+#####################################################################
+#####################################################################
+
+
+vcf=freebayes.SNPs.min6_max45_names_MAC2.with_AA.vcf.gz
+contigs=contigs_N50_pipefish.txt
+
+# all = SYN-248,SYN-250,SYN-251,SYN-252,SYN-3,SYN-45,SYN-46,SYN-47,SYN-48,SYN-4,SYN-50,SYN-51,SYN-52,SYN-53,SYN-54,SYN-55,SYN-56,SYN-58,SYN-5,SYN-64,SYN-66,SYN-67,SYN-68,SYN-69,SYN-6,SYN-70,SYN-71,SYN-73,SYN-90,SYN-91,SYN-93,SYN-94
+## Ã¥lesund vs west: SYN-54,SYN-55,SYN-56,SYN-58
+
+# alesunf vs west
+while read line;do
+for pop in SYN-54 SYN-55 SYN-56 SYN-58;do
+~/miniconda3/bin/smc++ vcf2smc -d $pop $pop $vcf SYN_alesund_west/${pop}_${line}.smc.gz $line aalesund:SYN-45,SYN-46,SYN-47,SYN-48,SYN-50,SYN-51,SYN-52,SYN-53,SYN-54,SYN-55,SYN-56,SYN-58;done
+done < contigs_N50_pipefish.txt
+
+### sogne vs south
+while read line;do
+for pop in SYN-64 SYN-66 SYN-67 SYN-68;do
+~/miniconda3/bin/smc++ vcf2smc -d $pop $pop $vcf SYN_sogne_south/${pop}_${line}.smc.gz $line aalesund:SYN-248,SYN-250,SYN-251,SYN-252,SYN-64,SYN-66,SYN-67,SYN-68,SYN-69,SYN-6,SYN-70,SYN-71,SYN-73,SYN-90,SYN-91,SYN-93,SYN-94;done
+done < contigs_N50_pipefish.txt
+
+
+## egersund vs all
+while read line;do
+for pop in SYN-3 SYN-4 SYN-5 SYN-6;do
+~/miniconda3/bin/smc++ vcf2smc -d $pop $pop $vcf SYN_egersund_all/${pop}_${line}.smc.gz $line egersund:SYN-248,SYN-250,SYN-251,SYN-252,SYN-3,SYN-45,SYN-46,SYN-47,SYN-48,SYN-4,SYN-50,SYN-51,SYN-52,SYN-53,SYN-54,SYN-55,SYN-56,SYN-58,SYN-5,SYN-64,SYN-66,SYN-67,SYN-68,SYN-69,SYN-6,SYN-70,SYN-71,SYN-73,SYN-90,SYN-91,SYN-93,SYN-94;done
+done < contigs_N50_pipefish.txt
+
+
+
+### do estimates
+### do cross validation
+
+~/miniconda3/bin/smc++ cv -o SYN_egersund_all/ --cores 1 --thinning 50 --unfold --timepoints 10 100000 1e-8 SYN_egersund_all/*gz
+~/miniconda3/bin/smc++ cv -o SYN_sogne_south/ --cores 1 --thinning 50 --unfold --timepoints 10 100000 1e-8 SYN_sogne_south/*gz
+~/miniconda3/bin/smc++ cv -o SYN_alesund_west/ --cores 1 --thinning 50 --unfold --timepoints 10 100000 1e-8 SYN_alesund_west/*gz
+
+
+SYN_alesund_west
+
+
+
+
+
+
+
+
+
+
+
+
+
