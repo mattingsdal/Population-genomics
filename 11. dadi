@@ -161,3 +161,36 @@ def bottleneck_split_bottleneck((nuAb, nu1B, nu1F, nu2B, nu2F, TAb, Ts, T1b, T2b
     fs = dadi.Spectrum.from_phi(phi, (n1,n2), (xx,yy))
     return fs
 
+
+
+
+#### plot specific model
+# plot resuduals and fitted models
+import sys
+import os
+import matplotlib
+matplotlib.use('Agg')
+import numpy
+import dadi
+import pylab
+from datetime import datetime
+from numpy import array
+import dadi_models
+
+
+data = dadi.Spectrum.from_file('INNO_Q30DP6-30A2_mm7hwe0001_noInv_877k_thin10k_46k_folded.fs')
+# give params of your best model
+params=array([5.1049,0.7107,25.8197,14.8359,13.2433,0.2141])
+pts = [30,40,50]
+ns = data.sample_sizes
+# specify your model
+func = dadi_models.SC
+func_ex = dadi.Numerics.make_extrap_log_func(func)
+#func_ex = dadi.Numerics.make_extrap_func(func)
+
+model = func_ex(params, ns, pts)
+
+pylab.figure()
+dadi.Plotting.plot_2d_comp_multinom(model, data, vmin=1, resid_range=20)
+pylab.savefig('cod.png', dpi=100)
+pylab.show()
