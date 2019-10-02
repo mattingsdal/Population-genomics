@@ -5,6 +5,7 @@ vcf=freebayes.SNPs.min8_max80.mac2.recode.vcf
 fasta1=Zmarina_Olsen.fasta
 fasta2=Zmu_v1_scaffolds.fasta
 
+## NEAR for fish vs fish, MAM8 for plant vs plant
 ### use NEAR for short and similar, use YASS for more diverged DNA
 $lastdir/lastdb8 -uYASS -R11 -P10 -c $fasta1.db8 $fasta1
 
