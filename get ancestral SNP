@@ -7,10 +7,10 @@ fasta2=Zmu_v1_scaffolds.fasta
 
 ## NEAR for fish vs fish, MAM8 for plant vs plant
 ### use NEAR for short and similar, use YASS for more diverged DNA
-$lastdir/lastdb8 -uYASS -R11 -P10 -c $fasta1.db8 $fasta1
+$lastdir/lastdb8 -uMAM8 -R11 -P10 -c $fasta1.db8 $fasta1
 
 ## do last
-$lastdir/parallel-fasta "${lastdir}/lastal8 -m 100 -E 0.05  $fasta1.db8 | $lastdir/last-split8 -m1" < $fasta2 > out.maf
+$lastdir/parallel-fasta "${lastdir}/lastal8 $fasta1.db8 | $lastdir/last-split8 -m1" < $fasta2 > out.maf
 renice -n 5 -u mortema
 
 #
