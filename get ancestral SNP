@@ -1,7 +1,7 @@
 lastdir=/usit/abel/u1/mortema/software/last-77d8757028c2/bin
 samdir=/usit/abel/u1/mortema/software/samtools-1.7
 picarddir=/usit/abel/u1/mortema/software
-vcf=freebayes.SNPs.min8_max80.mac2.recode.vcf
+vcf=freebayes.SNPs.min8_max80.recode.vcf
 fasta1=Zmarina_Olsen.fasta
 fasta2=Zmu_v1_scaffolds.fasta
 
