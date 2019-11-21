@@ -10,11 +10,11 @@ fasta2=Zmu_v1_scaffolds.fasta
 $lastdir/lastdb8 -uMAM8 -R11 -P10 -c $fasta1.db8 $fasta1
 
 ## do last
-$lastdir/parallel-fasta "${lastdir}/lastal8 $fasta1.db8 | $lastdir/last-split8 -m1" < $fasta2 > out.maf
+$lastdir/parallel-fasta "${lastdir}/lastal8 $fasta1.db8 | $lastdir/last-split8" < $fasta2 > out.maf
 renice -n 5 -u mortema
 
 #
-$lastdir/maf-swap out.maf | $lastdir/last-split8 -s100 > out20.maf
+$lastdir/maf-swap out.maf | $lastdir/last-split8 > out20.maf
 $lastdir/maf-swap out20.maf >out30.maf
 
 java -jar $picarddir/picard.jar CreateSequenceDictionary R=$fasta1 O=$fasta1.dict
