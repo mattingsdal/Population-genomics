@@ -1,4 +1,6 @@
-plink --recodeA
+# plink --recodeA
+
+library(KRIS)
 
 res=read.table("addetive.raw",sep=" ",header=T)
 snps=res[,7:18838]
