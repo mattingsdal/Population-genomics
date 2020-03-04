@@ -1,0 +1,20 @@
+plink --recodeA
+
+res=read.table("addetive.raw",sep=" ",header=T)
+snps=res[,7:18838]
+
+# define pop integer
+al=grep("Alesund",as.character(res[,1]))
+be=grep("Bergen",as.character(res[,1]))
+st=grep("Stavanger",as.character(res[,1]))
+eg=grep("Egersund",as.character(res[,1]))
+so=grep("Sogne",as.character(res[,1]))
+li=grep("Lillesand",as.character(res[,1]))
+tv=grep("Tvedestrand",as.character(res[,1]))
+vr=grep("Vrengen",as.character(res[,1]))
+os=grep("Oslo",as.character(res[,1]))
+hv=grep("Hvaler",as.character(res[,1]))
+
+
+# eks
+fst.hudson(snps, al, be)
