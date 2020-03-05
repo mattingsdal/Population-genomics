@@ -1,0 +1,43 @@
+## use N50 contigs
+awk '{if($4>403000) print $0}' mapfile.map | awk '{print $1}' | uniq >contigs_n50
+sed 's/$/\t/g' contigs_n50 >pattern
+grep -f pattern beagle.vcf >beagle_n50.vcf
+cat header beagle_n50.vcf >beagle_n50_rdy.vcf
+
+#### beagle impute and phase
+
+java -jar beagle.12Jul19.0df.jar gt=beagle_n50_rdy.vcf imp-segment=0.01 out=eelgrass_imputed nthreads=4
+
+# IBD
+
+java -jar refined-ibd.17Jan20.102.jar gt=eelgrass_imputed.vcf.gz out=ibd length=0.01 trim=0.001
+gunzip ibd.ibd.gz
+
+### merge breakpoints, need plink map file
+~/plink --vcf eelgrass_imputed.vcf.gz --recode --out eelgrass_imputed --allow-extra-chr
+## make centimorgans
+awk '{print $1"\t"$2"\t"$4/1000000"\t"$4}' eelgrass_imputed.map >mapfile.map
+
+zcat eelgrass_imputed.vcf.gz | awk '{print $1"\t"$3"\t"$2/1000000"\t"$2}' >mapfile.map
+cat ibd.ibd | java -jar merge-ibd-segments.17Jan20.102.jar eelgrass_imputed.vcf.gz mapfile.map 0.1 10 >test
+
+
+
+## R
+ibd=read.table("test",sep="\t",header=F)
+fam=read.table("eelgrass_imputed.fam",sep="",header=F)
+id=paste(fam[,1],fam[,2],sep="_")
+
+res=matrix(ncol=length(id),nrow=length(id))
+
+for (j in 1:length(id)){
+for (i in 1:length(id)){
+        res[j,i]=sum(ibd[ibd[,1]==id[j]&ibd[,3]==id[i]|ibd[,1]==id[i]&ibd[,3]==id[j],9])
+}
+}
+
+colnames(res)=id
+row.names(res)=id
+index=c(1,2,3,40,21,26,37,39,30,33,35,41,4,10,14,23,5,25,27,29,18,20,24,31,16,17,19,38,8,9,22,34,6,7,12,13,28,11,15,32,36)
+
+#### HEATMAP etc
