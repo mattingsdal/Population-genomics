@@ -1,0 +1,48 @@
+~/plink --vcf freebayes_parallel_QUAL30_min8_max60.NAMES_MIN8_max10percent_missing_biallelic_SNPs_HWE.recode.vcf --recode-vcf --out beagle --allow-extra-ch
+
+## impute using beagle
+java -jar beagle.12Jul19.0df.jar gt=beagle.vcf imp-segment=0.1 out=eelgrass_imputed
+
+## filter rare variants
+vcftools --vcf eelgrass_imputed.vcf --mac 4 --recode --out eelgrass_common
+
+## thin by 1000 bp
+#vcftools --vcf eelgrass_common.recode.vcf --thin 1000 --recode --out eelgrass_common_thin
+
+
+grep 'Sogne' eelgrass_imputed.fam | awk '{print $1"\t"$2}' | sed 's/\t/_/g' >Sogne.keep
+grep 'Stavanger' eelgrass_imputed.fam | awk '{print $1"\t"$2}' | sed 's/\t/_/g' >Stavanger.keep
+grep 'Egersund' eelgrass_imputed.fam | awk '{print $1"\t"$2}' | sed 's/\t/_/g' >Egersund.keep
+
+grep 'Lillesand' eelgrass_imputed.fam | awk '{print $1"\t"$2}' | sed 's/\t/_/g' >Lillesand.keep
+grep 'Tvedestrand' eelgrass_imputed.fam | awk '{print $1"\t"$2}' | sed 's/\t/_/g' >Tvedestrand.keep
+
+
+grep 'Vrengen' eelgrass_imputed.fam | awk '{print $1"\t"$2}' | sed 's/\t/_/g' >Vrengen.keep
+grep 'Hvaler' eelgrass_imputed.fam | awk '{print $1"\t"$2}' | sed 's/\t/_/g' >Hvaler.keep
+
+cat Lillesand.keep Sogne.keep >sor.pop
+cat Vrengen.keep Hvaler.keep >ost.pop
+
+
+for i in {1..30}
+do
+contig=scaffold_$i
+vcf=eelgrass_common.recode.vcf
+vcftools --vcf $vcf --chr $contig --keep sor.pop --recode --out sor_$contig
+vcftools --vcf $vcf --chr $contig --keep ost.pop --recode --out ost_$contig
+vcftools --vcf $vcf --chr $contig --keep Tvedestrand.keep --recode --out admix_$contig
+
+cat sor_$contig.recode.vcf | java -jar vcf2beagle.jar m sor.pcadmix
+cat ost_$contig.recode.vcf | java -jar vcf2beagle.jar m ost.pcadmix
+cat admix_$contig.recode.vcf | java -jar vcf2beagle.jar m admix.pcadmix
+
+gunzip -f *bgl*
+
+awk '{print $1"\t"$3"\t"0"\t"$2}' admix_$contig.recode.vcf | sed '/#/d' >contig.map
+
+~/software/PCAdmix/PCAdmix3_linux -lab ost sor -anc ost.pcadmix.bgl sor.pcadmix.bgl -adm admix.pcadmix.bgl -map contig.map -wMb 0.05 -prune 0 -o $contig
+
+done
+
+
