@@ -1,0 +1,23 @@
+### used phased data (beagle) and convert to fasta using vcf2fasta in vcflib
+
+# phased data is eelgrass_phased_n50_header.vcf
+vcftools --vcf eelgrass_phased_n50_header.vcf --chr scaffold_1 --recode --out scaffold_1
+~/software/vcflib/bin/vcf2fasta -f ../Zmarina_324_v2.2.fa -p scaffold_1_ -P 2 ../scaffold_1.recode.vcf
+cat *Vrengen*fa *Oslo*fa *Hvaler*fa >ost.fasta
+
+
+### sequences are in ost.fasta
+
+library(LDJump)
+
+# provde paths
+ldhat="/home/morten/software/LDhat"
+phi="/home/morten/software/PhiPack/Phi"
+file="/home/morten/ECOGENOME/eelgrass/LDJump/ost_scaffold_2.fasta" # the result of vcf2fasta of phased data
+
+#local recombination rate
+result = LDJump(file, alpha = 0.05, segLength = 5000,pathLDhat = ldhat,pathPhi = phi, format = "fasta")
+
+# global recombination rate
+result = LDJump(file, alpha = 0.05, segLength = 5000,pathLDhat = ldhat,pathPhi = phi, format = "fasta",constant=T)
+
