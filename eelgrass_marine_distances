@@ -1,0 +1,51 @@
+library(maptools)
+library(raster)
+library(fasterize)
+data(wrld_simpl)
+library(rnaturalearthdata)
+library(rnaturalearth)
+library(sf)
+
+# map=out <- crop(wrld_simpl, extent(3, 13, 57, 63))
+norway <- ne_countries(scale = 10, country = c("Norway","Sweden","Denmark"), returnclass = "sf")
+map <- st_crop(norway, xmin = 3, xmax = 13,ymin = 57, ymax = 63)
+
+extent(map)
+
+#r <- raster(x = map,extent(map), nrow = 250,  ncol = 250)
+r <- raster(xmn=3, xmx=13, ymn=57, ymx=63, nrow = 500,  ncol = 500)
+r <- rasterize(x = map, y = r, field = 1)
+plot(r)
+
+r[r==1] <- 0
+r[is.na(r)] <- 1
+
+
+newproj <- "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs"
+pr1 <- projectRaster(r, crs=newproj)
+
+pr1[pr1>0] <- 1
+pr1[pr1<0]=0
+
+
+
+
+coords <- data.frame(station = c("Al", "Be", "St", "Eg","So","Li","Tv","Vr","Os","Hv"),
+                     longitude = c(6.520643, 5.112969, 5.604572, 5.998192,7.828274,8.379955,8.955603,10.434936,10.602560,10.846590),
+                     latitude = c(62.406674, 60.643996, 59.026422, 58.409446,58.048818,58.236814,58.593956,59.160740,59.845181,59.080849))
+                     
+coords <- st_as_sf(coords, coords = c("longitude", "latitude"),crs = 4326, stringsAsFactors = FALSE) #%>% 
+utm=st_transform(coords,crs = 32619)
+
+xy <- st_coordinates(utm)
+
+cells=cellFromXY(pr1, xy)
+
+pr1[pr1==10]=1
+pr1[cells[9]] <- 10
+
+d <- gridDistance(pr1, origin = 10,omit = 0)
+
+d[cells]/1000
+
+points(xy,add=T,cex=5,pch=19,col="red")
